@@ -1,0 +1,29 @@
+networks:
+  private:
+
+services:
+
+  memcached:
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+      - -vvvvv
+    image: memcached:1.6.34
+    networks:
+      - private
+    ports:
+      - 11211:11211
+
+  postgres:
+    environment:
+      POSTGRES_DB: benchdb
+      POSTGRES_PASSWORD: benchpwd
+      POSTGRES_USER: bench
+    image: postgres:17.2
+    networks:
+      - private
+    ports:
+      - 5432:5432
+
+version: '3'
