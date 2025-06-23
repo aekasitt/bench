@@ -8,13 +8,13 @@ dependencies = [
   'aiomcache >=0.8.2',
   'asyncpg >=0.30.0',
   'fastapi >=0.115.6',
+  'litestar >=2.0.0',
   'orjson >=3.10.14',
   'prometheus-client >=0.21.1',
   'uvicorn >=0.34.0',
 ]
 description = 'Performance is a feature'
 name = 'bench-fastapi'
-packages = [{ from='src', include='bench_fastapi' }]
 readme = 'README.md'
 requires-python = '>=3.13'
 version = '0.1.0'
@@ -22,10 +22,11 @@ version = '0.1.0'
 
 [project.scripts]
 bench-fastapi = 'bench_fastapi.core:main'
+bench-litestar = 'bench_litestar.core:main'
 
 
 [tool.hatch.build.targets.wheel]
-packages = [ 'src/bench_fastapi' ]
+packages = [ 'src/bench_fastapi', 'src/bench_litestar' ]
 
 
 [tool.ruff]
