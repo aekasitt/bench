@@ -9,14 +9,11 @@
 # HISTORY:
 # *************************************************************
 
-### Standard packages ###
-from typing import Tuple
-
 ### Third-party packages ###
 from prometheus_client import Histogram
 
 # exactly the same histogram buckets as in Go.
-buckets: Tuple[float, ...] = (
+buckets: tuple[float, ...] = (
   0.00001,
   0.000015,
   0.00002,
@@ -288,4 +285,4 @@ H = Histogram(
 )
 
 
-__all__ = ("H", "buckets")
+__all__: tuple[str, ...] = ("H", "buckets")
