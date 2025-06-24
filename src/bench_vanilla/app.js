@@ -1,6 +1,7 @@
 /* ~~/src/bench_vanilla/app.js */
 
 // imports
+import cluster from 'node:cluster'
 import histogram from './metrics.js'
 import save from './devices.js'
 import { randomUUID } from 'crypto'
@@ -102,6 +103,15 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
   res.end('Not Found')
 })
 
-console.log(`Node is listening on http://0.0.0.0:8080 ...`)
-
-server.listen(8080)
+if (cluster.isPrimary) {
+  const workers = parseInt(process.argv[2] || 4)
+  console.log(`Node is listening on http://0.0.0.0:8080 ...`)
+  console.log(`Workers=${workers}`)
+  for (let i = 0; i < workers; i++) cluster.fork()
+  cluster.on(
+    'exit',
+    (worker, code, signal) => console.log(`worker ${worker.process.pid} died`),
+  )
+} else {
+  server.listen(8080)
+}

@@ -208,7 +208,7 @@ app = Litestar(
 def main() -> None:
   from uvicorn import run
 
-  run("bench_litestar.core:app", port=8080, workers=20)
+  run("bench_litestar.core:app", port=8080, workers=4)
 
 
 if __name__ == "__main__":
