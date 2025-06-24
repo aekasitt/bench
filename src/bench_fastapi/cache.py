@@ -25,6 +25,7 @@ from bench_fastapi.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
 
+
 async def get_memcached() -> AsyncGenerator[Client, None]:
   """Dependency for getting Memcached client"""
   client: Client | None = None
