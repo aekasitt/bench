@@ -25,9 +25,9 @@ from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.response import Response
 from litestar.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
+from msgspec import Struct
 from orjson import dumps
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-from pydantic import BaseModel
 
 ### Local modules ###
 from bench_litestar.cache import get_memcached
@@ -38,7 +38,7 @@ from bench_litestar.metrics import H
 logger: Logger = getLogger(__name__)
 
 
-class DeviceRequest(BaseModel):
+class DeviceRequest(Struct):
   mac: str
   firmware: str
 
@@ -208,7 +208,7 @@ app = Litestar(
 def main() -> None:
   from uvicorn import run
 
-  run("bench_litestar.core:app", port=8080, workers=10)
+  run("bench_litestar.core:app", port=8080, workers=20)
 
 
 if __name__ == "__main__":
