@@ -120,6 +120,84 @@ Plus, it's fun.
 
 Not looking good for FastAPI and Python so far, but wait there's more...
 
+## Contribution
+
+Here is a guideline on running the tests yourself.
+
+### Prerequisites
+
+  * [git](https://git-scm.com/) - --fast-version-control
+  * [nodejs](https://nodejs.org) (20.18.1+) - Run JavaScript Everywhere
+    - [pnpm](https://pnpm.io) - Fast, disk space efficient package manager
+  * [python](https://www.python.org) (3.9+) - lets you work quickly and integrate systems more effectively
+    * ~~[pip](https://pypi.org/project/pip)~~ - PyPA recommended tool for installing Python packages
+    - [uv](https://docs.astral.sh/uv) - extremely fast Python package and project manager, written in Rust
+  * [docker](https://www.docker.com) - Accelerated container application development
+
+The following guide walks through setting up your local working environment using `git`
+as distributed version control system and `uv` as Python package and version manager.
+If you do not have `git` installed, run the following command.
+
+<details>
+  <summary> Install git using Homebrew (Darwin) </summary>
+  
+  ```sh
+  brew install git
+  ```
+</details>
+
+<details>
+  <summary> Install git via binary installer (Linux) </summary>
+  
+  * Debian-based package management
+  ```sh
+  sudo apt install git-all
+  ```
+
+  * Fedora-based package management
+  ```sh
+  sudo dnf install git-all
+  ```
+</details>
+
+TODO: `nodejs` and `pnpm` setup
+
+If you do not have `uv` installed, run the following command.
+
+<details>
+  <summary> Install uv using Homebrew (Darwin) </summary>
+
+  ```sh
+  brew install uv
+  ```
+</details>
+
+<details>
+  <summary> Install uv using standalone installer (Darwin and Linux) </summary>
+
+  ```sh
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  ```
+</details>
+
+Once you have `git` distributed version control system installed, you can
+clone the current repository and  install any version of Python above version
+3.13 for this project. The following commands help you set up and activate a
+Python virtual environment where `uv` can download project dependencies from the `PyPI`
+open-sourced registry defined under `pyproject.toml` file.
+
+<details>
+  <summary> Set up environment and synchronize project dependencies </summary>
+
+  ```sh
+  git clone git@github.com:aekasitt/bench.git
+  cd bench
+  uv venv --python 3.13
+  source .venv/bin/activate
+  uv sync --dev
+  ```
+</details>
+
 ## Acknowledgements
 
 1. [Lesson 236](https://github.com/antonputra/tutorials/tree/main/lessons/236) by [@antonputra](https://github.com/antonputra)
