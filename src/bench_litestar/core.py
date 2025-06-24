@@ -2,7 +2,7 @@
 # Copyright (C) 2025 All rights reserved.
 # FILENAME:    ~~/src/bench_litestar/core.py
 # VERSION:     0.1.0
-# CREATED:     2025-01-22 15:23
+# CREATED:     2025-06-24 02:38
 # AUTHOR:      Sitt Guruvanich <aekazitt+github@gmail.com>
 # DESCRIPTION:
 #
@@ -116,7 +116,9 @@ async def create_device(
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
 
     if not row:
-      raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create device record")
+      raise HTTPException(
+        status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create device record"
+      )
 
     device_dict = {
       "id": row["id"],
@@ -142,7 +144,10 @@ async def create_device(
 
   except PostgresError:
     logger.exception("Postgres error")
-    raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error occurred while creating device")
+    raise HTTPException(
+      status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+      detail="Database error occurred while creating device",
+    )
 
   except (ClientException, SocketError):
     logger.exception("Memcached error")
@@ -151,10 +156,11 @@ async def create_device(
       detail="Memcached Database error occurred while creating device",
     )
 
-  except Exception as err:
+  except Exception:
     logger.exception("Unknown error")
     raise HTTPException(
-      status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred while creating device"
+      status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+      detail="An unexpected error occurred while creating device",
     )
 
 
@@ -172,8 +178,11 @@ async def get_device_stats(memcached: Client) -> dict:
     }
   except (ClientException, SocketError):
     logger.exception("Memcached error")
-    raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Memcached error occurred while retrieving stats")
-  except Exception as err:
+    raise HTTPException(
+      status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+      detail="Memcached error occurred while retrieving stats",
+    )
+  except Exception:
     logger.exception("Unknown error")
     raise HTTPException(
       status_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -192,7 +201,7 @@ app = Litestar(
   dependencies={
     "postgres": Provide(get_postgres_connection),
     "memcached": Provide(get_memcached),
-  }
+  },
 )
 
 
@@ -205,4 +214,5 @@ def main() -> None:
 if __name__ == "__main__":
   main()
 
-__all__ = ("app", "main") 
+
+__all__ = ("app", "main")

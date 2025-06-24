@@ -2,7 +2,7 @@
 # Copyright (C) 2025 All rights reserved.
 # FILENAME:    ~~/src/bench_litestar/cache.py
 # VERSION:     0.1.0
-# CREATED:     2025-01-22 15:23
+# CREATED:     2025-06-24 02:38
 # AUTHOR:      Sitt Guruvanich <aekazitt+github@gmail.com>
 # DESCRIPTION:
 #
@@ -24,6 +24,7 @@ from bench_litestar.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
 
+
 async def get_memcached() -> AsyncGenerator[Client, None]:
   """Dependency for getting Memcached client"""
   client: Client | None = None
@@ -37,4 +38,5 @@ async def get_memcached() -> AsyncGenerator[Client, None]:
     if client is not None:
       await client.close()
 
-__all__ = ("get_memcached",) 
+
+__all__ = ("get_memcached",)

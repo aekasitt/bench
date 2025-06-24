@@ -2,7 +2,7 @@
 # Copyright (C) 2025 All rights reserved.
 # FILENAME:    ~~/src/bench_litestar/configs.py
 # VERSION:     0.1.0
-# CREATED:     2025-01-22 15:23
+# CREATED:     2025-06-24 02:38
 # AUTHOR:      Sitt Guruvanich <aekazitt+github@gmail.com>
 # DESCRIPTION:
 #
@@ -25,4 +25,5 @@ MEMCACHED_POOL_SIZE: int = int(getenv("MEMCACHED_POOL_SIZE", "500"))
 POSTGRES_POOL_SIZE: int = int(getenv("POSTGRES_POOL_SIZE", "20"))
 POSTGRES_URI: str = getenv("POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb")
 
-__all__ = ("MEMCACHED_HOST", "MEMCACHED_POOL_SIZE", "POSTGRES_POOL_SIZE", "POSTGRES_URI") 
+
+__all__ = ("MEMCACHED_HOST", "MEMCACHED_POOL_SIZE", "POSTGRES_POOL_SIZE", "POSTGRES_URI")

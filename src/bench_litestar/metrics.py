@@ -2,7 +2,7 @@
 # Copyright (C) 2025 All rights reserved.
 # FILENAME:    ~~/src/bench_litestar/metrics.py
 # VERSION:     0.1.0
-# CREATED:     2025-01-22 15:23
+# CREATED:     2025-06-24 02:38
 # AUTHOR:      Sitt Guruvanich <aekazitt+github@gmail.com>
 # DESCRIPTION:
 #
@@ -287,4 +287,5 @@ H = Histogram(
   buckets=buckets,
 )
 
-__all__ = ("H", "buckets") 
+
+__all__ = ("H", "buckets")

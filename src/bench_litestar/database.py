@@ -2,7 +2,7 @@
 # Copyright (C) 2025 All rights reserved.
 # FILENAME:    ~~/src/bench_litestar/database.py
 # VERSION:     0.1.0
-# CREATED:     2025-01-22 15:23
+# CREATED:     2025-06-24 02:38
 # AUTHOR:      Sitt Guruvanich <aekazitt+github@gmail.com>
 # DESCRIPTION:
 #
@@ -23,6 +23,7 @@ from bench_litestar.configs import POSTGRES_POOL_SIZE, POSTGRES_URI
 
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
+
 
 @asynccontextmanager
 async def get_database() -> AsyncGenerator[Connection, None]:
@@ -50,4 +51,5 @@ async def get_postgres_connection() -> Connection:
   async with get_database() as connection:
     yield connection
 
-__all__ = ("get_database", "get_postgres_connection") 
+
+__all__ = ("get_database", "get_postgres_connection")
