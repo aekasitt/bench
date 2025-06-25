@@ -27,7 +27,54 @@ bench-litestar = 'bench_litestar.core:main'
 
 
 [tool.hatch.build.targets.wheel]
-packages = [ 'src/bench_fastapi', 'src/bench_litestar' ]
+packages = [
+  'src/bench_fastapi',
+  'src/bench_litestar',
+]
+
+
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+dependencies = [
+  'hatch-mypyc >=0.16.0',
+  'mypy >=1.15.0',
+]
+enable-by-default = false
+exclude = [
+  '/src/bench_fastapi',
+  '/src/bench_fastify',
+  '/src/bench_vanilla',
+]
+mypy-args = [
+  '--disallow-untyped-calls',
+  '--disallow-untyped-defs',
+  '--disallow-incomplete-defs',
+  '--strict',
+]
+packages = [ 'src/bench_litestar' ]
+only-include = [
+  '/src/bench_litestar/cache.py',
+  '/src/bench_litestar/configs.py',
+  '/src/bench_litestar/core.py',
+  '/src/bench_litestar/database.py',
+  '/src/bench_litestar/metrics.py',
+]
+
+
+[tool.hatch.build.targets.wheel.hooks.mypyc.options]
+debug_level = '0'
+opt_level = '3'
+
+
+[tool.mypy]
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+exclude = [
+  'src/bench_fastapi',
+  'src/bench_fastify',
+  'src/bench_vanilla',
+]
+strict = true
 
 
 [tool.ruff]
@@ -42,6 +89,7 @@ target-version = 'py313'
 
 [tool.uv]
 dev-dependencies = [
+  'mypy >=1.15.0',
   'python-dotenv >=1.0.1',
   'ruff >=0.9.2',
 ]
