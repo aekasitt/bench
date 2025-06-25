@@ -53,7 +53,7 @@ def health() -> str:
 
 
 @get("/metrics", sync_to_thread=False)
-def metrics() -> Response:
+def metrics() -> Response[bytes]:
   """Prometheus metrics endpoint"""
   return Response(
     content=generate_latest(),
