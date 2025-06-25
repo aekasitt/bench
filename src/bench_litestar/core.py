@@ -62,7 +62,7 @@ def metrics() -> Response[bytes]:
 
 
 @get("/api/devices", sync_to_thread=False)
-def get_devices() -> list[dict]:
+def get_devices() -> list[dict[str, int | str]]:
   devices = (
     {
       "id": 1,
