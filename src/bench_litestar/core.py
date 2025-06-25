@@ -62,8 +62,8 @@ def metrics() -> Response[bytes]:
 
 
 @get("/api/devices", sync_to_thread=False)
-def get_devices() -> list[dict[str, int | str]]:
-  devices = (
+def get_devices() -> tuple[dict[str, int | str], ...]:
+  devices: tuple[dict[str, int | str], ...] = (
     {
       "id": 1,
       "uuid": "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
