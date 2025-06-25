@@ -98,7 +98,7 @@ async def create_device(
   device: DeviceRequest,
   postgres: Connection,
   memcached: Client,
-) -> dict:
+) -> dict[str, datetime | str]:
   try:
     now = datetime.now(timezone.utc)
     device_uuid = uuid()
@@ -165,7 +165,7 @@ async def create_device(
 
 
 @get("/api/devices/stats")
-async def get_device_stats(memcached: Client) -> dict:
+async def get_device_stats(memcached: Client) -> dict[str, None | bytes | int | str]:
   try:
     stats = await memcached.stats()
     return {
