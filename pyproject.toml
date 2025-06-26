@@ -43,6 +43,7 @@ exclude = [
   '/src/bench_fastapi',
   '/src/bench_fastify',
   '/src/bench_vanilla',
+  '/src/bench_litestar/schema.py',
 ]
 mypy-args = [
   '--disallow-untyped-calls',
