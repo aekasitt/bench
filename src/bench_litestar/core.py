@@ -22,6 +22,7 @@ from aiomcache.exceptions import ClientException
 from asyncpg import Connection, Record
 from asyncpg.exceptions import PostgresError
 from litestar import Litestar, get, post
+from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.response import Response
 from litestar.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
@@ -29,58 +30,22 @@ from orjson import dumps
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 ### Local modules ###
-from bench_litestar.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE, POSTGRES_URI
+from bench_litestar.cache import get_memcached
+from bench_litestar.database import get_postgres_connection
 from bench_litestar.metrics import H
 
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
 
-### Global connections ###
-postgres_connection: Connection | None = None
-memcached_client: Client | None = None
-
 
 class DeviceRequest:
-  def __init__(self, mac: str, firmware: str) -> None:
-    self.mac = mac
-    self.firmware = firmware
+    def __init__(self, mac: str, firmware: str) -> None:
+        self.mac = mac
+        self.firmware = firmware
 
 
 H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
 H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
-
-
-async def initialize_connections() -> None:
-  """Initialize database and cache connections"""
-  global postgres_connection, memcached_client
-
-  try:
-    # Initialize PostgreSQL connection
-    from asyncpg import connect
-
-    postgres_connection = await connect(POSTGRES_URI)
-    logger.info("PostgreSQL connection established")
-
-    # Initialize Memcached client
-    memcached_client = Client(host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE)
-    logger.info("Memcached client initialized")
-
-  except Exception as e:
-    logger.error(f"Failed to initialize connections: {e}")
-    raise
-
-
-async def cleanup_connections() -> None:
-  """Clean up database and cache connections"""
-  global postgres_connection, memcached_client
-
-  if postgres_connection:
-    await postgres_connection.close()
-    logger.info("PostgreSQL connection closed")
-
-  if memcached_client:
-    await memcached_client.close()
-    logger.info("Memcached client closed")
 
 
 @get("/healthz", sync_to_thread=True)
@@ -129,28 +94,25 @@ def get_devices() -> tuple[dict[str, int | str], ...]:
   return devices
 
 
-@post("/api/devices", status_code=HTTP_201_CREATED)
-async def create_device(device: DeviceRequest) -> dict[str, datetime | str]:
-  global postgres_connection, memcached_client
-
-  if not postgres_connection or not memcached_client:
-    raise HTTPException(
-      status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Database or cache not initialized"
-    )
-
+@post("/api/devices", status_code=HTTP_201_CREATED, sync_to_thread=True)
+async def create_device(
+  device: DeviceRequest,
+  postgres: Connection,
+  memcached: Client,
+) -> dict[str, datetime | str]:
   try:
     now = datetime.now(timezone.utc)
     device_uuid = uuid()
 
     insert_query = """
-                INSERT INTO litestar_device (uuid, mac, firmware, created_at, updated_at)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING id;
-                """
+            INSERT INTO litestar_device (uuid, mac, firmware, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id;
+            """
 
     start_time: float = perf_counter()
 
-    row: Record | None = await postgres_connection.fetchrow(
+    row: Record | None = await postgres.fetchrow(
       insert_query, device_uuid, device.mac, device.firmware, now, now
     )
 
@@ -173,7 +135,7 @@ async def create_device(device: DeviceRequest) -> dict[str, datetime | str]:
     # Measure cache operation
     start_time = perf_counter()
 
-    await memcached_client.set(
+    await memcached.set(
       device_uuid.hex.encode(),
       dumps(device_dict),
       exptime=20,
@@ -205,13 +167,10 @@ async def create_device(device: DeviceRequest) -> dict[str, datetime | str]:
     )
 
 
-@get("/api/devices/stats")
-async def get_device_stats() -> dict[str, None | bytes | int | str]:
-  global memcached_client
-  if not memcached_client:
-    raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Cache not initialized")
+@get("/api/devices/stats", sync_to_thread=True)
+async def get_device_stats(memcached: Client) -> dict[str, None | bytes | int | str]:
   try:
-    stats = await memcached_client.stats()
+    stats = await memcached.stats()
     return {
       "curr_items": stats.get(b"curr_items", 0),
       "total_items": stats.get(b"total_items", 0),
@@ -242,24 +201,21 @@ app = Litestar(
     create_device,
     get_device_stats,
   ],
+  dependencies={
+    "postgres": Provide(get_postgres_connection),
+    "memcached": Provide(get_memcached),
+  },
 )
 
 
 def main() -> None:
-  import asyncio
   from uvicorn import run
 
-  # Initialize connections before starting the server
-  asyncio.run(initialize_connections())
-  try:
-    run(app, port=8080)
-  finally:
-    # Clean up connections when the server stops
-    asyncio.run(cleanup_connections())
+  run(app, port=8080)
 
 
 if __name__ == "__main__":
   main()
 
 
-__all__ = ("app", "main", "initialize_connections", "cleanup_connections")
+__all__ = ("app", "main")
