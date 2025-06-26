@@ -26,4 +26,9 @@ POSTGRES_POOL_SIZE: int = int(getenv("POSTGRES_POOL_SIZE", "20"))
 POSTGRES_URI: str = getenv("POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb")
 
 
-__all__: tuple[str, ...] = ("MEMCACHED_HOST", "MEMCACHED_POOL_SIZE", "POSTGRES_POOL_SIZE", "POSTGRES_URI")
+__all__: tuple[str, ...] = (
+  "MEMCACHED_HOST",
+  "MEMCACHED_POOL_SIZE",
+  "POSTGRES_POOL_SIZE",
+  "POSTGRES_URI",
+)
