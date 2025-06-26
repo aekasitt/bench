@@ -1,5 +1,6 @@
 ### byte-compiled ###
 **/__pycache__
+**/*.so
 
 
 # nodejs dependencies
