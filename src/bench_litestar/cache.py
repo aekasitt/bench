@@ -11,7 +11,6 @@
 
 ### Standard packages ###
 from logging import Logger, getLogger
-from typing import AsyncGenerator
 
 ### Third-party packages ###
 from aiomcache import Client
@@ -25,18 +24,14 @@ from bench_litestar.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
 logger: Logger = getLogger(__name__)
 
 
-async def get_memcached() -> AsyncGenerator[Client, None]:
+async def get_memcached() -> Client:
   """Dependency for getting Memcached client"""
-  client: Client | None = None
   try:
     client = Client(host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE)
     logger.info("Memcached pool created successfully")
-    yield client
+    return client
   except ClientException as e:
     raise HTTPException(status_code=503, detail=f"Memcached error: {e}")
-  finally:
-    if client is not None:
-      await client.close()
 
 
 __all__ = ("get_memcached",)
