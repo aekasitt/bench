@@ -162,7 +162,7 @@ async def create_device(device: DeviceRequest) -> dict[str, datetime | str]:
       )
 
     device_dict = {
-      "id": row["id"],  # type: ignore[index]
+      "id": row["id"],
       "uuid": str(device_uuid),
       "mac": device.mac,
       "firmware": device.firmware,
