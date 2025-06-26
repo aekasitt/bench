@@ -48,12 +48,12 @@ H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
 H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
 
-@get("/healthz", sync_to_thread=False)
+@get("/healthz", sync_to_thread=True)
 def health() -> str:
   return "OK"
 
 
-@get("/metrics", sync_to_thread=False)
+@get("/metrics", sync_to_thread=True)
 def metrics() -> Response[bytes]:
   """Prometheus metrics endpoint"""
   return Response(
@@ -62,7 +62,7 @@ def metrics() -> Response[bytes]:
   )
 
 
-@get("/api/devices", sync_to_thread=False)
+@get("/api/devices", sync_to_thread=True)
 def get_devices() -> tuple[dict[str, int | str], ...]:
   devices: tuple[dict[str, int | str], ...] = (
     {
@@ -94,7 +94,7 @@ def get_devices() -> tuple[dict[str, int | str], ...]:
   return devices
 
 
-@post("/api/devices", status_code=HTTP_201_CREATED)
+@post("/api/devices", status_code=HTTP_201_CREATED, sync_to_thread=True)
 async def create_device(
   device: DeviceRequest,
   postgres: Connection,
@@ -167,7 +167,7 @@ async def create_device(
     )
 
 
-@get("/api/devices/stats")
+@get("/api/devices/stats", sync_to_thread=True)
 async def get_device_stats(memcached: Client) -> dict[str, None | bytes | int | str]:
   try:
     stats = await memcached.stats()
