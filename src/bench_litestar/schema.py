@@ -14,8 +14,8 @@ from msgspec import Struct
 
 
 class DeviceRequest(Struct):
-    mac: str
-    firmware: str
+  mac: str
+  firmware: str
 
 
 __all__: tuple[str, ...] = ("DeviceRequest",)
