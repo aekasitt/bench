@@ -160,7 +160,7 @@ async def get_device_stats(memcached: Memcached):
   except (ClientException, SocketError):
     logger.exception("Memcached error")
     raise HTTPException(status_code=500, detail="Memcached error occurred while retrieving stats")
-  except Exception as err:
+  except Exception:
     logger.exception("Unknown error")
     raise HTTPException(
       status_code=500,
@@ -171,7 +171,7 @@ async def get_device_stats(memcached: Memcached):
 def main() -> None:
   from uvicorn import run
 
-  run("bench_fastapi.core:app", port=8080, workers=4)
+  run(app, port=8080)
 
 
 if __name__ == "__main__":
