@@ -19,7 +19,8 @@ from uuid import uuid4 as uuid
 ### Third-party packages ###
 from aiomcache import Client
 from aiomcache.exceptions import ClientException
-from asyncpg import Connection, PostgresError
+from asyncpg import Connection, Record
+from asyncpg.exceptions import PostgresError
 from litestar import Litestar, get, post
 from litestar.di import Provide
 from litestar.exceptions import HTTPException
@@ -111,7 +112,7 @@ async def create_device(
 
     start_time: float = perf_counter()
 
-    row = await postgres.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
+    row: Record | None = await postgres.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
 
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
 
