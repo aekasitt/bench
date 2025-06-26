@@ -26,6 +26,7 @@ from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.response import Response
 from litestar.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
+from msgspec import Struct
 from orjson import dumps
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
@@ -38,10 +39,9 @@ from bench_litestar.metrics import H
 logger: Logger = getLogger(__name__)
 
 
-class DeviceRequest:
-    def __init__(self, mac: str, firmware: str) -> None:
-        self.mac = mac
-        self.firmware = firmware
+class DeviceRequest(Struct):
+  mac: str
+  firmware: str
 
 
 H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
@@ -94,7 +94,7 @@ def get_devices() -> tuple[dict[str, int | str], ...]:
   return devices
 
 
-@post("/api/devices", status_code=HTTP_201_CREATED, sync_to_thread=True)
+@post("/api/devices", status_code=HTTP_201_CREATED)
 async def create_device(
   device: DeviceRequest,
   postgres: Connection,
@@ -167,7 +167,7 @@ async def create_device(
     )
 
 
-@get("/api/devices/stats", sync_to_thread=True)
+@get("/api/devices/stats")
 async def get_device_stats(memcached: Client) -> dict[str, None | bytes | int | str]:
   try:
     stats = await memcached.stats()
