@@ -46,7 +46,7 @@ async def get_database() -> AsyncGenerator[Connection, None]:
       await pool.close()
 
 
-async def get_postgres_connection() -> Connection:
+async def get_postgres_connection() -> AsyncGenerator[Connection, None]:
   """Dependency for getting PostgreSQL connection"""
   async with get_database() as connection:
     yield connection
