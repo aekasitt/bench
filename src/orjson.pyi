@@ -7,28 +7,19 @@ Type stubs for orjson package.
 from typing import Any, Dict, List, Optional, Union
 
 ### Type aliases ###
-JSONValue = Union[
-    None,
-    bool,
-    int,
-    float,
-    str,
-    List[Any],
-    Dict[str, Any]
-]
+JSONValue = Union[None, bool, int, float, str, List[Any], Dict[str, Any]]
 
 ### Functions ###
 def dumps(
-    obj: Any,
-    *,
-    default: Optional[Any] = None,
-    option: Optional[int] = None,
+  obj: Any,
+  *,
+  default: Optional[Any] = None,
+  option: Optional[int] = None,
 ) -> bytes: ...
-
 def loads(
-    obj: Union[bytes, bytearray, memoryview, str],
-    *,
-    option: Optional[int] = None,
+  obj: Union[bytes, bytearray, memoryview, str],
+  *,
+  option: Optional[int] = None,
 ) -> JSONValue: ...
 
 ### Constants ###
@@ -50,19 +41,19 @@ JSONDecodeError: type[Exception] = ...
 JSONEncodeError: type[Exception] = ...
 
 __all__: tuple[str, ...] = (
-    "dumps",
-    "loads",
-    "OPT_INDENT_2",
-    "OPT_NAIVE_UTC",
-    "OPT_NON_STR_KEYS",
-    "OPT_OMIT_MICROSECONDS",
-    "OPT_PASSTHROUGH_DATETIME",
-    "OPT_PASSTHROUGH_SUBCLASS",
-    "OPT_SERIALIZE_DATETIME",
-    "OPT_SERIALIZE_NUMPY",
-    "OPT_SERIALIZE_UUID",
-    "OPT_STRICT_INTEGER",
-    "OPT_UNICODE_ESCAPE",
-    "JSONDecodeError",
-    "JSONEncodeError",
-) 
+  "dumps",
+  "loads",
+  "OPT_INDENT_2",
+  "OPT_NAIVE_UTC",
+  "OPT_NON_STR_KEYS",
+  "OPT_OMIT_MICROSECONDS",
+  "OPT_PASSTHROUGH_DATETIME",
+  "OPT_PASSTHROUGH_SUBCLASS",
+  "OPT_SERIALIZE_DATETIME",
+  "OPT_SERIALIZE_NUMPY",
+  "OPT_SERIALIZE_UUID",
+  "OPT_STRICT_INTEGER",
+  "OPT_UNICODE_ESCAPE",
+  "JSONDecodeError",
+  "JSONEncodeError",
+)

@@ -8,7 +8,6 @@ from typing import Any, Callable
 
 CONTENT_TYPE_LATEST: str
 
-
 class Histogram:
   def __init__(
     self,
@@ -32,9 +31,7 @@ class Histogram:
   def time(self) -> Callable[[], None]:
     """TODO"""
 
-
 def generate_latest() -> bytes:
   """TODO"""
-
 
 __all__: tuple[str, ...] = ("CONTENT_TYPE_LATEST", "Histogram", "generate_latest")
