@@ -6,14 +6,17 @@ Type stubs for uvicorn package.
 ### Standard packages ###
 from typing import Any, Callable, Optional, Union
 
+### Local modules ###
+from litestar import Litestar
+
 ### Type aliases ###
 ASGIApplication = Callable[..., Any]
 Host = str
 Port = int
 
-### Functions ###
+
 def run(
-  app: Union[str, ASGIApplication],
+  app: Union[str, ASGIApplication, Litestar],
   *,
   host: Host = "127.0.0.1",
   port: Port = 8000,
