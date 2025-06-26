@@ -28,7 +28,7 @@ from litestar.response import Response
 from litestar.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 from msgspec import Struct
 from orjson import dumps
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 ### Local modules ###
 from bench_litestar.cache import get_memcached
