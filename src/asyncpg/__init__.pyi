@@ -12,59 +12,37 @@
 ### Standard packages ###
 from typing import Any, Awaitable, Coroutine, overload
 
-
 class ConnectionMeta(type):
   def __instancecheck__(cls, instance: "Connection") -> bool:
     """TODO"""
 
-
 class Connection(metaclass=ConnectionMeta):
   """TODO"""
   async def fetchrow(
-    self,
-    query: str,
-    *args: Any,
-    timeout: None | float = None,
-    record_class: None | "Record" = None
-  ) -> "Record":
-    ...
-
+    self, query: str, *args: Any, timeout: None | float = None, record_class: None | "Record" = None
+  ) -> "Record": ...
 
 class Record:
   """TODO"""
 
   @overload
-  def __getitem__(self, index: str) -> Any:
-    ...
-
+  def __getitem__(self, index: str) -> Any: ...
   @overload
-  def __getitem__(self, index: int) -> Any:
-    ...
-
+  def __getitem__(self, index: int) -> Any: ...
   @overload
-  def __getitem__(self, index: slice) -> tuple[Any, ...]:
-    ...
-
+  def __getitem__(self, index: slice) -> tuple[Any, ...]: ...
 
 class Pool:
   """TODO"""
 
-  def acquire(self, *, timeout: None | float = None) -> "PoolAcquireContext":
-    ...
-
-  async def close(self) -> None:
-    ...
-
+  def acquire(self, *, timeout: None | float = None) -> "PoolAcquireContext": ...
+  async def close(self) -> None: ...
 
 class PoolAcquireContext:
   """TODO"""
 
-  async def __aenter__(self) -> Connection:
-    ...
-
-  async def __aexit__(self, *exc: Any) -> None:
-    ...
-
+  async def __aenter__(self) -> Connection: ...
+  async def __aexit__(self, *exc: Any) -> None: ...
 
 def create_pool(
   dsn: None | str = None,
@@ -78,11 +56,10 @@ def create_pool(
   init: Coroutine[None, None, Any] | None = None,
   reset: Coroutine[None, None, Any] | None = None,
   loop: Coroutine[None, None, Any] | None = None,
-  connection_class:type = Connection,
+  connection_class: type = Connection,
   record_class: type = Record,
   **connect_kwargs: Any,
 ) -> Awaitable[Pool]:
   """TODO"""
-
 
 __all__: tuple[str, ...] = ("Connection", "ConnectionMeta", "Record", "Pool", "create_pool")

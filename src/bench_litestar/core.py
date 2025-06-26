@@ -112,7 +112,9 @@ async def create_device(
 
     start_time: float = perf_counter()
 
-    row: Record | None = await postgres.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
+    row: Record | None = await postgres.fetchrow(
+      insert_query, device_uuid, device.mac, device.firmware, now, now
+    )
 
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
 

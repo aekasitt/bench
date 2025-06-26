@@ -13,13 +13,10 @@ class PostgresMessageMeta(type):
   def __instancecheck__(cls, instance: "PostgresMessage") -> bool:
     """TODO"""
 
-
 class PostgresMessage(metaclass=PostgresMessageMeta):
   """TODO"""
 
-
 class PostgresError(PostgresMessage, Exception):
   """TODO"""
-
 
 __all__: tuple[str, ...] = ("PostgresError", "PostgresMessage", "PostgresMessageMeta")
