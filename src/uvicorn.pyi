@@ -14,7 +14,6 @@ ASGIApplication = Callable[..., Any]
 Host = str
 Port = int
 
-
 def run(
   app: Union[str, ASGIApplication, Litestar],
   *,
