@@ -16,41 +16,59 @@ Type stubs for asyncpg package main module.
 ### Standard packages ###
 from typing import Any, Union, overload
 
+
 class ConnectionMeta(type):
   def __instancecheck__(cls, instance: "Connection") -> bool:
     """TODO"""
+
 
 class Connection(metaclass=ConnectionMeta):
   """TODO"""
   async def fetchrow(
     self, query: str, *args: Any, timeout: None | float = None, record_class: None | "Record" = None
-  ) -> "Record": ...
-  async def fetch(self, query: str, *args: Any) -> list["Record"]: ...
-  async def execute(self, query: str, *args: Any) -> str: ...
-  async def close(self) -> None: ...
+  ) -> "Record":
+    """TODO"""
+  async def fetch(self, query: str, *args: Any) -> list["Record"]:
+    """TODO"""
+  async def execute(self, query: str, *args: Any) -> str:
+    """TODO"""
+  async def close(self) -> None:
+    """TODO"""
 
 class Record:
   """TODO"""
 
   @overload
-  def __getitem__(self, index: str) -> Any: ...
+  def __getitem__(self, index: str) -> Any:
+    """index getitem"""
   @overload
-  def __getitem__(self, index: int) -> Any: ...
+  def __getitem__(self, index: int) -> Any:
+    """index getitem"""
   @overload
-  def __getitem__(self, index: slice) -> tuple[Any, ...]: ...
-  def get(self, key: Union[str, int], default: Any = None) -> Any: ...
+  def __getitem__(self, index: slice) -> tuple[Any, ...]:
+    """index getitem"""
+
+  def get(self, key: Union[str, int], default: Any = None) -> Any:
+    """TODO"""
+
 
 class Pool:
   """TODO"""
 
-  def acquire(self) -> "PoolAcquireContext": ...
-  async def close(self) -> None: ...
+  def acquire(self) -> "PoolAcquireContext":
+    """TODO"""
+  async def close(self) -> None:
+    """TODO"""
+
 
 class PoolAcquireContext:
   """TODO"""
 
-  async def __aenter__(self) -> Connection: ...
-  async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None: ...
+  async def __aenter__(self) -> Connection:
+    """TODO"""
+  async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    """TODO"""
+
 
 def create_pool(
   dsn: str,
@@ -62,7 +80,10 @@ def create_pool(
 ) -> Pool:
   """TODO"""
 
-async def connect(dsn: str, **kwargs: Any) -> Connection: ...
+
+async def connect(dsn: str, **kwargs: Any) -> Connection:
+  """TODO"""
+
 
 __all__: tuple[str, ...] = (
   "Connection",
