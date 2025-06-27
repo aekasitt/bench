@@ -8,48 +8,16 @@
 #
 # HISTORY:
 # *************************************************************
-
 """
 Type stubs for asyncpg package main module.
 """
 
 ### Standard packages ###
-from typing import Any, Union, overload
+from typing import Any
 
-
-class ConnectionMeta(type):
-  def __instancecheck__(cls, instance: "Connection") -> bool:
-    """TODO"""
-
-
-class Connection(metaclass=ConnectionMeta):
-  """TODO"""
-  async def fetchrow(
-    self, query: str, *args: Any, timeout: None | float = None, record_class: None | "Record" = None
-  ) -> "Record":
-    """TODO"""
-  async def fetch(self, query: str, *args: Any) -> list["Record"]:
-    """TODO"""
-  async def execute(self, query: str, *args: Any) -> str:
-    """TODO"""
-  async def close(self) -> None:
-    """TODO"""
-
-class Record:
-  """TODO"""
-
-  @overload
-  def __getitem__(self, index: str) -> Any:
-    """index getitem"""
-  @overload
-  def __getitem__(self, index: int) -> Any:
-    """index getitem"""
-  @overload
-  def __getitem__(self, index: slice) -> tuple[Any, ...]:
-    """index getitem"""
-
-  def get(self, key: Union[str, int], default: Any = None) -> Any:
-    """TODO"""
+### Local modules ###
+from asyncpg.connection import Connection, connect
+from asyncpg.protocol.protocol import Record
 
 
 class Pool:
@@ -81,13 +49,8 @@ def create_pool(
   """TODO"""
 
 
-async def connect(dsn: str, **kwargs: Any) -> Connection:
-  """TODO"""
-
-
 __all__: tuple[str, ...] = (
   "Connection",
-  "ConnectionMeta",
   "Record",
   "Pool",
   "create_pool",
