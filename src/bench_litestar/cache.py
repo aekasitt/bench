@@ -24,8 +24,8 @@ from bench_litestar.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
 logger: Logger = getLogger(__name__)
 
 
-async def get_memcached() -> Client:
-  """Dependency for getting Memcached client"""
+def get_memcached() -> Client:
+  """Get Memcached client instance"""
   try:
     client = Client(host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE)
     logger.info("Memcached pool created successfully")

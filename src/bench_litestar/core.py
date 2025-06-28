@@ -17,12 +17,9 @@ from time import perf_counter
 from uuid import uuid4 as uuid
 
 ### Third-party packages ###
-from aiomcache import Client
 from aiomcache.exceptions import ClientException
-from asyncpg import Connection, Record
 from asyncpg.exceptions import PostgresError
 from litestar import Litestar, get, post
-from litestar.di import Provide
 from litestar.exceptions import HTTPException
 from litestar.response import Response
 from litestar.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
@@ -97,8 +94,6 @@ def get_devices() -> tuple[dict[str, int | str], ...]:
 @post("/api/devices", status_code=HTTP_201_CREATED)
 async def create_device(
   device: DeviceRequest,
-  postgres: Connection,
-  memcached: Client,
 ) -> dict[str, datetime | str]:
   try:
     now = datetime.now(timezone.utc)
@@ -112,6 +107,7 @@ async def create_device(
 
     start_time: float = perf_counter()
 
+    postgres = get_postgres_connection()
     row: Record | None = await postgres.fetchrow(
       insert_query, device_uuid, device.mac, device.firmware, now, now
     )
@@ -135,6 +131,7 @@ async def create_device(
     # Measure cache operation
     start_time = perf_counter()
 
+    memcached = get_memcached()
     await memcached.set(
       device_uuid.hex.encode(),
       dumps(device_dict),
@@ -168,8 +165,9 @@ async def create_device(
 
 
 @get("/api/devices/stats")
-async def get_device_stats(memcached: Client) -> dict[str, None | bytes | int | str]:
+async def get_device_stats() -> dict[str, None | bytes | int | str]:
   try:
+    memcached = get_memcached()
     stats = await memcached.stats()
     return {
       "curr_items": stats.get(b"curr_items", 0),
@@ -201,10 +199,6 @@ app = Litestar(
     create_device,
     get_device_stats,
   ],
-  dependencies={
-    "postgres": Provide(get_postgres_connection),
-    "memcached": Provide(get_memcached),
-  },
 )
 
 

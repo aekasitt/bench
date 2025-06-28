@@ -34,9 +34,9 @@ async def get_database() -> Connection:
     raise ValueError("Failed to create PostgreSQL connection")
 
 
-async def get_postgres_connection() -> Connection:
-  """Dependency for getting PostgreSQL connection"""
-  return await get_database()
+def get_postgres_connection() -> Connection:
+  """Get PostgreSQL connection instance"""
+  return get_database()
 
 
 __all__ = ("get_database", "get_postgres_connection")
