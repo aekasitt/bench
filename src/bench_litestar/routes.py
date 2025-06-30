@@ -19,6 +19,7 @@ from uuid import uuid4 as uuid
 ### Third-party packages ###
 from aiomcache.exceptions import ClientException
 from asyncpg.exceptions import PostgresError
+from msgspec import Struct
 from orjson import dumps
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
@@ -36,13 +37,9 @@ H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
 H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
 
-class DeviceRequest:
+class DeviceRequest(Struct):
   mac: str
   firmware: str
-
-  def __init__(self, mac: str, firmware: str):
-    self.mac = mac
-    self.firmware = firmware
 
 
 def health() -> str:
