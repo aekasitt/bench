@@ -35,8 +35,8 @@
     "bench:fastify": "node src/bench_fastify/app.js",
     "bench:vanilla": "node src/bench_vanilla/app.js",
     "fmt": "prettier --write ./src/bench_{fastify,vanilla}/*.js",
-    "press:devices": "autocannon localhost:8080/api/devices",
-    "press:stats": "autocannon localhost:8080/api/devices/stats"
+    "press:devices": "autocannon --connection 1000 localhost:8080/api/devices",
+    "press:stats": "autocannon --connection 1000 localhost:8080/api/devices/stats"
   },
   "version": "0.1.0"
 }
