@@ -32,7 +32,7 @@ async def app(
 def main() -> None:
   from uvicorn import run
 
-  run("bench_uvicorn.core:app", port=8080, workers=64)
+  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=64)
 
 
 if __name__ == "__main__":
