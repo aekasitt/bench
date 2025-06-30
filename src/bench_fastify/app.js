@@ -95,6 +95,7 @@ server.setNotFoundHandler((_, reply) => {
 
 const NUM_WORKERS = 8
 if (cluster.isPrimary) {
+  console.log(`Node is listening on http://0.0.0.0:8080 ...`)
   for (let i = 0; i < NUM_WORKERS; i++) {
     cluster.fork();
   }
@@ -104,7 +105,6 @@ if (cluster.isPrimary) {
     (worker, code, signal) => console.log(`worker ${worker.process.pid} died`),
   );
 } else {
-  console.log(`Node is listening on http://0.0.0.0:8080 ...`)
   server.listen({
     host: '0.0.0.0',
     port: 8080,
