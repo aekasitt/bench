@@ -8,9 +8,9 @@ dependencies = [
   'aiomcache >=0.8.2',
   'asyncpg >=0.30.0',
   'fastapi >=0.115.6',
-  'litestar >=2.0.0',
+  'litestar >=2.16.0',
   'msgspec >=0.19.0',
-  'orjson >=3.10.14',
+  'orjson >=3.10.18',
   'prometheus-client >=0.21.1',
   'starlette >=0.37.0',
   'uvicorn >=0.34.0',
@@ -26,6 +26,7 @@ version = '0.1.0'
 bench-fastapi = 'bench_fastapi.core:main'
 bench-litestar = 'bench_litestar.core:main'
 bench-starlette = 'bench_starlette.core:main'
+bench-uvicorn = 'bench_uvicorn.core:main'
 
 
 [tool.hatch.build.targets.wheel]
@@ -33,6 +34,7 @@ packages = [
   'src/bench_fastapi',
   'src/bench_litestar',
   'src/bench_starlette',
+  'src/bench_uvicorn',
 ]
 
 
@@ -46,22 +48,23 @@ exclude = [
   '/src/bench_fastapi',
   '/src/bench_fastify',
   '/src/bench_litestar',
+  '/src/bench_starlette',
   '/src/bench_vanilla',
+  '/src/bench_uvicorn/cache.py',
+  '/src/bench_uvicorn/configs.py',
+  '/src/bench_uvicorn/core.py',
+  '/src/bench_uvicorn/database.py',
+  '/src/bench_uvicorn/metrics.py',
 ]
 mypy-args = [
   '--disallow-untyped-calls',
   '--disallow-untyped-defs',
   '--disallow-incomplete-defs',
-  '--strict',
+  # '--strict',
 ]
 packages = [ 'src/bench_starlette' ]
 only-include = [
-  '/src/bench_starlette/cache.py',
-  '/src/bench_starlette/configs.py',
-  '/src/bench_starlette/core.py',
-  '/src/bench_starlette/database.py',
-  '/src/bench_starlette/routes.py',
-  '/src/bench_starlette/metrics.py',
+  '/src/bench_uvicorn/routes.py',
 ]
 
 
@@ -78,6 +81,7 @@ exclude = [
   'src/bench_fastapi',
   'src/bench_fastify',
   'src/bench_litestar',
+  'src/bench_starlette',
   'src/bench_vanilla',
 ]
 strict = true

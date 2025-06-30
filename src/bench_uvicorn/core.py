@@ -1,0 +1,42 @@
+#!/usr/bin/env python3.13
+# Copyright (C) 2025 All rights reserved.
+# FILENAME:    ~~/src/bench_starlette/core.py
+# VERSION:     0.1.0
+# CREATED:     2025-06-30 14:01
+# AUTHOR:      Sitt Guruvanich <aekazitt+github@gmail.com>
+# DESCRIPTION:
+#
+# HISTORY:
+# *************************************************************
+
+### Third-party packages ###
+from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
+
+### Local modules ###
+from bench_uvicorn.routes import get_devices, health
+
+
+async def app(
+  scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable
+) -> None:
+  assert scope["type"] == "http"
+  path: str = scope["path"]
+  method: str = scope["method"]
+
+  if path == "/api/devices" and method == "GET":
+    await get_devices(scope, receive, send)
+  elif path == "/healthz" and method == "GET":
+    await health(scope, receive, send)
+
+
+def main() -> None:
+  from uvicorn import run
+
+  run("bench_uvicorn.core:app", port=8080, workers=64)
+
+
+if __name__ == "__main__":
+  main()
+
+
+__all__ = ("app", "main")
