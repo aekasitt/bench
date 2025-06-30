@@ -32,7 +32,7 @@ app = Starlette(routes=routes)
 def main() -> None:
   from uvicorn import run
 
-  run("bench_starlette.core:app", port=8080, workers=16)
+  run(app, port=8080)
 
 
 if __name__ == "__main__":

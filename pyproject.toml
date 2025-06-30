@@ -16,9 +16,9 @@ dependencies = [
   'uvicorn >=0.34.0',
 ]
 description = 'Performance is a feature'
-name = 'bench-fastapi'
+name = 'bench'
 readme = 'README.md'
-requires-python = '>=3.9.19'
+requires-python = '>=3.12.9'
 version = '0.1.0'
 
 
@@ -46,8 +46,6 @@ exclude = [
   '/src/bench_fastapi',
   '/src/bench_fastify',
   '/src/bench_litestar',
-  '/src/bench_starlette/core.py',
-  '/src/bench_starlette/routes.py',
   '/src/bench_vanilla',
 ]
 mypy-args = [
@@ -60,7 +58,9 @@ packages = [ 'src/bench_starlette' ]
 only-include = [
   '/src/bench_starlette/cache.py',
   '/src/bench_starlette/configs.py',
+  '/src/bench_starlette/core.py',
   '/src/bench_starlette/database.py',
+  '/src/bench_starlette/routes.py',
   '/src/bench_starlette/metrics.py',
 ]
 
@@ -86,7 +86,7 @@ strict = true
 [tool.ruff]
 indent-width = 2
 line-length = 100
-target-version = 'py39'
+target-version = 'py312'
 
 
 [tool.ruff.lint.per-file-ignores]
