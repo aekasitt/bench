@@ -12,24 +12,27 @@ dependencies = [
   'msgspec >=0.19.0',
   'orjson >=3.10.14',
   'prometheus-client >=0.21.1',
+  'starlette >=0.37.0',
   'uvicorn >=0.34.0',
 ]
 description = 'Performance is a feature'
 name = 'bench-fastapi'
 readme = 'README.md'
-requires-python = '>=3.13'
+requires-python = '>=3.9.19'
 version = '0.1.0'
 
 
 [project.scripts]
 bench-fastapi = 'bench_fastapi.core:main'
 bench-litestar = 'bench_litestar.core:main'
+bench-starlette = 'bench_starlette.core:main'
 
 
 [tool.hatch.build.targets.wheel]
 packages = [
   'src/bench_fastapi',
   'src/bench_litestar',
+  'src/bench_starlette',
 ]
 
 
@@ -42,8 +45,9 @@ enable-by-default = true
 exclude = [
   '/src/bench_fastapi',
   '/src/bench_fastify',
-  '/src/bench_litestar/core.py',
-  '/src/bench_litestar/routes.py',
+  '/src/bench_litestar',
+  '/src/bench_starlette/core.py',
+  '/src/bench_starlette/routes.py',
   '/src/bench_vanilla',
 ]
 mypy-args = [
@@ -52,12 +56,12 @@ mypy-args = [
   '--disallow-incomplete-defs',
   '--strict',
 ]
-packages = [ 'src/bench_litestar' ]
+packages = [ 'src/bench_starlette' ]
 only-include = [
-  '/src/bench_litestar/cache.py',
-  '/src/bench_litestar/configs.py',
-  '/src/bench_litestar/database.py',
-  '/src/bench_litestar/metrics.py',
+  '/src/bench_starlette/cache.py',
+  '/src/bench_starlette/configs.py',
+  '/src/bench_starlette/database.py',
+  '/src/bench_starlette/metrics.py',
 ]
 
 
@@ -73,6 +77,7 @@ disallow_untyped_defs = true
 exclude = [
   'src/bench_fastapi',
   'src/bench_fastify',
+  'src/bench_litestar',
   'src/bench_vanilla',
 ]
 strict = true
@@ -81,7 +86,7 @@ strict = true
 [tool.ruff]
 indent-width = 2
 line-length = 100
-target-version = 'py313'
+target-version = 'py39'
 
 
 [tool.ruff.lint.per-file-ignores]
