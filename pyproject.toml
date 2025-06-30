@@ -42,9 +42,7 @@ enable-by-default = true
 exclude = [
   '/src/bench_fastapi',
   '/src/bench_fastify',
-  '/src/bench_litestar/cache.py',
-  '/src/bench_litestar/core.py',
-  '/src/bench_litestar/database.py',
+  '/src/bench_litestar/.py',
   '/src/bench_vanilla',
 ]
 mypy-args = [
@@ -55,8 +53,11 @@ mypy-args = [
 ]
 packages = [ 'src/bench_litestar' ]
 only-include = [
+  '/src/bench_litestar/cache.py',
   '/src/bench_litestar/configs.py',
+  '/src/bench_litestar/database.py',
   '/src/bench_litestar/metrics.py',
+  '/src/bench_litestar/routes.py',
 ]
 
 
