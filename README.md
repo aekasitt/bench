@@ -118,6 +118,54 @@ Plus, it's fun.
     386k requests in 10.04s, 277 MB read
 </details>
 
+<details>
+  <summary> Autocannon results on localhost running uvicorn with mypycified /api/devices </summary>
+
+    Running 10s test @ http://localhost:8080/api/devices
+    10000 connections
+    
+    running [====================] 100%
+    ┌─────────┬────────┬────────┬─────────┬─────────┬───────────┬───────────┬─────────┐
+    │ Stat    │ 2.5%   │ 50%    │ 97.5%   │ 99%     │ Avg       │ Stdev     │ Max     │
+    ├─────────┼────────┼────────┼─────────┼─────────┼───────────┼───────────┼─────────┤
+    │ Latency │ 160 ms │ 282 ms │ 1116 ms │ 1596 ms │ 385.94 ms │ 519.27 ms │ 9008 ms │
+    └─────────┴────────┴────────┴─────────┴─────────┴───────────┴───────────┴─────────┘
+    ┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬────────┬─────────┐
+    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev  │ Min     │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼────────┼─────────┤
+    │ Req/Sec   │ 46,207  │ 46,207  │ 46,367  │ 47,039  │ 46,512  │ 328.22 │ 46,190  │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼────────┼─────────┤
+    │ Bytes/Sec │ 33.3 MB │ 33.3 MB │ 33.4 MB │ 33.9 MB │ 33.5 MB │ 238 kB │ 33.3 MB │
+    └───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┴─────────┘
+</details>
+<details>
+  <summary> Time verbose results wrapped around localhost running uvicorn </summary>
+
+  ```sh
+  $ time -l bench-uvicorn
+  >            17.80  real
+  >            45.06  user
+  >             8.90  sys
+  >         32030720  maximum resident set size
+  >                0  average shared memory size
+  >                0  average unshared data size
+  >                0  average unshared stack size
+  >           225990  page reclaims
+  >             5070  page faults
+  >                0  swaps
+  >                0  block input operations
+  >                0  block output operations
+  >           724741  messages sent
+  >           248407  messages received
+  >              132  signals received
+  >             2170  voluntary context switches
+  >           625147  involuntary context switches
+  >       1150187160  instructions retired
+  >        752487685  cycles elapsed
+  >         20497664  peak memory footprint
+  ```
+</details>
+
 Not looking good for FastAPI and Python so far, but wait there's more...
 
 ## Contribution
