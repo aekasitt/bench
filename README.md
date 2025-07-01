@@ -142,7 +142,7 @@ Plus, it's fun.
   <summary> Time verbose results wrapped around localhost running uvicorn </summary>
 
   ```sh
-  $ time -l bench-uvicorn
+  $ /usr/bin/time -l bench-uvicorn
   >            17.80  real
   >            45.06  user
   >             8.90  sys
@@ -165,8 +165,6 @@ Plus, it's fun.
   >         20497664  peak memory footprint
   ```
 </details>
-
-Not looking good for FastAPI and Python so far, but wait there's more...
 
 ## Contribution
 
