@@ -10,28 +10,32 @@
 # *************************************************************
 
 ### Standard packages ###
-from logging import Logger, getLogger
+from types import TracebackType
+from typing import Type
 
 ### Third-party packages ###
-from aiomcache import Client
-from aiomcache.exceptions import ClientException
-from starlette.exceptions import HTTPException
+from pymemcache.client.base import Client
 
 ### Local modules ###
 from bench_litestar.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
 
-### Initiate module logger ###
-logger: Logger = getLogger(__name__)
 
-
-def get_memcached() -> Client:
+class Memcached:
   """Get Memcached client instance"""
-  try:
-    client = Client(host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE)
-    logger.info("Memcached pool created successfully")
-    return client
-  except ClientException as e:
-    raise HTTPException(status_code=503, detail=f"Memcached error: {e}")
+
+  client: Client
+
+  def __enter__(self) -> "Memcached":
+    self.client = Client(f"{MEMCACHED_HOST}:11211")  #, max_pool_size=MEMCACHED_POOL_SIZE)
+    return self
+
+  def __exit__(
+    self,
+    exc_type: None | Type[BaseException],
+    exc: Type[BaseException],
+    tb: TracebackType
+  ) -> None:
+    self.client.close()
 
 
-__all__: tuple[str, ...] = ("get_memcached",)
+__all__: tuple[str, ...] = ("Memcached",)

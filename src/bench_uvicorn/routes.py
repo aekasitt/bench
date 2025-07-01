@@ -16,19 +16,17 @@ from socket import gaierror as SocketError
 from typing import Any
 
 ### Third-party packages ###
-from aiomcache.exceptions import ClientException
+from pymemcache.exceptions import MemcacheError
 # from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
 
 ### Local modules ###
-from bench_uvicorn.cache import get_memcached
+from bench_uvicorn.cache import Memcached
 
 ### Initiate module logger ###
 logger: Logger = getLogger("uvicorn")
 
 
-async def health(
-  scope: Any, receive: Any, send: Any
-) -> None:
+async def health(scope: Any, receive: Any, send: Any) -> None:
   """Health check endpoint"""
   await send(
     {
@@ -45,9 +43,7 @@ async def health(
   )
 
 
-async def get_devices(
-  scope: Any, receive: Any, send: Any
-) -> None:
+async def get_devices(scope: Any, receive: Any, send: Any) -> None:
   """Get static list of devices"""
   devices: tuple[dict[str, int | str], ...] = (
     {
@@ -95,16 +91,17 @@ async def get_device_stats(
   receive: Any,
   send: Any,
 ) -> None:
-  memcached = get_memcached()
   try:
-    stats = await memcached.stats()
+    stats: dict[bytes, bytes] = {}
+    with Memcached() as memcached:
+      stats = memcached.client.stats()
     stats_data = {
-      "curr_items": stats.get(b"curr_items", b"0").decode("utf-8"),
-      "total_items": stats.get(b"total_items", b"0").decode("utf-8"),
-      "bytes": stats.get(b"bytes", b"0").decode("utf-8"),
-      "curr_connections": stats.get(b"curr_connections", b"0").decode("utf-8"),
-      "get_hits": stats.get(b"get_hits", b"0").decode("utf-8"),
-      "get_misses": stats.get(b"get_misses", b"0").decode("utf-8"),
+      "curr_items": stats.get(b"curr_items", 0),
+      "total_items": stats.get(b"total_items", 0),
+      "bytes": stats.get(b"bytes", 0),
+      "curr_connections": stats.get(b"curr_connections", 0),
+      "get_hits": stats.get(b"get_hits", 0),
+      "get_misses": stats.get(b"get_misses", 0),
     }
     await send(
       {
@@ -119,8 +116,8 @@ async def get_device_stats(
         "body": dumps(stats_data).encode("utf-8"),
       }
     )
-  except (ClientException, SocketError):
-    logger.exception("Memcached error")
+  except (MemcacheError, SocketError) as e:
+    logger.exception(f"Memcached error: {e}")
     await send(
       {
         "type": "http.response.start",
@@ -134,8 +131,8 @@ async def get_device_stats(
         "body": b"Memcached error occurred while retrieving stats",
       }
     )
-  except Exception:
-    logger.exception("Unknown error")
+  except Exception as e:
+    logger.exception(f"Unknown error: {e}")
     await send(
       {
         "type": "http.response.start",

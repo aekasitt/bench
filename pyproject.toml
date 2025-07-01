@@ -5,12 +5,12 @@ requires = [ 'hatchling' ]
 
 [project]
 dependencies = [
-  'aiomcache >=0.8.2',
   'asyncpg >=0.30.0',
   'fastapi >=0.115.6',
   'litestar >=2.16.0',
   'msgspec >=0.19.0',
   'prometheus-client >=0.21.1',
+  'pymemcache >=4.0.0',
   'starlette >=0.37.0',
   'uvicorn >=0.34.0',
 ]

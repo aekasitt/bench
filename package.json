@@ -37,7 +37,7 @@
     "fmt": "prettier --write ./src/bench_{fastify,vanilla}/*.js",
     "press:devices": "autocannon -c 10000 localhost:8080/api/devices",
     "press:health": "autocannon -c 10000 localhost:8080/healthz",
-    "press:stats": "autocannon -c 10000 localhost:8080/api/devices/stats"
+    "press:stats": "autocannon -a 10000 localhost:8080/api/devices/stats"
   },
   "version": "0.1.0"
 }
