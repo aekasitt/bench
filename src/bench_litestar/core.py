@@ -10,22 +10,17 @@
 # *************************************************************
 
 ### Third-party packages ###
-from litestar import Litestar
-from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar import Litestar, get, post
 from litestar.status_codes import HTTP_201_CREATED
 
 ### Local modules ###
 from bench_litestar.routes import create_device, get_device_stats, get_devices, health, metrics
 
-health_handler = HTTPRouteHandler("/healthz", http_method="GET", sync_to_thread=True)(health)
-metrics_handler = HTTPRouteHandler("/metrics", http_method="GET", sync_to_thread=True)(metrics)
-devices_handler = HTTPRouteHandler("/api/devices", http_method="GET", sync_to_thread=True)(
-  get_devices
-)
-create_device_handler = HTTPRouteHandler(
-  "/api/devices", http_method="POST", status_code=HTTP_201_CREATED
-)(create_device)
-device_stats_handler = HTTPRouteHandler("/api/devices/stats", http_method="GET")(get_device_stats)
+health_handler = get("/healthz", sync_to_thread=True)(health)
+metrics_handler = get("/metrics", sync_to_thread=True)(metrics)
+devices_handler = get("/api/devices", sync_to_thread=True)(get_devices)
+create_device_handler = post("/api/devices", status_code=HTTP_201_CREATED)(create_device)
+device_stats_handler = get("/api/devices/stats")(get_device_stats)
 
 app = Litestar(
   route_handlers=[
@@ -41,7 +36,7 @@ app = Litestar(
 def main() -> None:
   from uvicorn import run
 
-  run("bench_litestar.core:app", port=8080, workers=16)
+  run("bench_litestar.core:app", log_level="error", port=8080, workers=64)
 
 
 if __name__ == "__main__":
