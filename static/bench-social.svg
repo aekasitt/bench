@@ -146,22 +146,22 @@
 <g filter='url(#dropShadowLite)'>
     <path
       d='
-        M908, 475
-        h-408
+        M1130, 475
+        h-630
         q-9,0 -9,9
         q0,9 9,9
-        h408
+        h630
         z
       '
       fill='#3572A5'
       />
     <path
       d='
-        M908, 475
-        h292
+        M1130, 475
+        h70
         q9,0 9,9
         q0,9 -9,9
-        h-292
+        h-70
         z
       '
       fill='#F1E05A'
@@ -180,17 +180,17 @@
     <tspan
       fill='#888'
       >
-      60%
+      90%
     </tspan>
     <tspan
-      dx='16rem'
+      dx='22.8rem'
       >
       JavaScript
     </tspan>
     <tspan
       fill='#888'
       >
-      40%
+      10%
     </tspan>
   </text>
 </svg>
