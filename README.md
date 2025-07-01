@@ -69,7 +69,6 @@ Plus, it's fun.
     >         41125120  peak memory footprint
 </details>
 
-
 <details>
     <summary> Autocannon results on localhost running Litestar /api/devices </summary>
 
