@@ -228,7 +228,7 @@ If you do not have `uv` installed, run the following command.
 
 Once you have `git` distributed version control system installed, you can
 clone the current repository and  install any version of Python above version
-3.13 for this project. The following commands help you set up and activate a
+3.12 for this project. The following commands help you set up and activate a
 Python virtual environment where `uv` can download project dependencies from the `PyPI`
 open-sourced registry defined under `pyproject.toml` file.
 
@@ -238,7 +238,7 @@ open-sourced registry defined under `pyproject.toml` file.
   ```sh
   git clone git@github.com:aekasitt/bench.git
   cd bench
-  uv venv --python 3.13
+  uv venv --python 3.12
   source .venv/bin/activate
   uv sync --dev
   ```
