@@ -102,25 +102,54 @@ Plus, it's fun.
     <summary> Autocannon results on localhost running Fastify /api/devices </summary>
 
     Running 10s test @ http://localhost:8080/api/devices
-    10 connections
+    10000 connections
     
-    ┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬───────┐
-    │ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max   │
-    ├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼───────┤
-    │ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0.01 ms │ 0.16 ms │ 22 ms │
-    └─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴───────┘
-    ┌───────────┬─────────┬─────────┬─────────┬─────────┬──────────┬──────────┬─────────┐
-    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg      │ Stdev    │ Min     │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼──────────┼──────────┼─────────┤
-    │ Req/Sec   │ 41,567  │ 41,567  │ 49,407  │ 50,399  │ 48,371.2 │ 2,548.96 │ 41,548  │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼──────────┼──────────┼─────────┤
-    │ Bytes/Sec │ 28.3 MB │ 28.3 MB │ 33.7 MB │ 34.4 MB │ 33 MB    │ 1.74 MB  │ 28.3 MB │
-    └───────────┴─────────┴─────────┴─────────┴─────────┴──────────┴──────────┴─────────┘
+    
+    ┌─────────┬────────┬────────┬─────────┬─────────┬───────────┬──────────┬─────────┐
+    │ Stat    │ 2.5%   │ 50%    │ 97.5%   │ 99%     │ Avg       │ Stdev    │ Max     │
+    ├─────────┼────────┼────────┼─────────┼─────────┼───────────┼──────────┼─────────┤
+    │ Latency │ 113 ms │ 179 ms │ 1113 ms │ 3189 ms │ 311.23 ms │ 547.5 ms │ 6717 ms │
+    └─────────┴────────┴────────┴─────────┴─────────┴───────────┴──────────┴─────────┘
+    ┌───────────┬─────────┬─────────┬─────────┬─────────┬───────────┬──────────┬─────────┐
+    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg       │ Stdev    │ Min     │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┼──────────┼─────────┤
+    │ Req/Sec   │ 44,735  │ 44,735  │ 48,703  │ 63,583  │ 49,505.78 │ 5,113.67 │ 44,709  │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┼──────────┼─────────┤
+    │ Bytes/Sec │ 30.5 MB │ 30.5 MB │ 33.2 MB │ 43.4 MB │ 33.8 MB   │ 3.49 MB  │ 30.5 MB │
+    └───────────┴─────────┴─────────┴─────────┴─────────┴───────────┴──────────┴─────────┘
     
     Req/Bytes counts sampled once per second.
-    # of samples: 10
+    # of samples: 9
     
-    484k requests in 10.04s, 330 MB read
+    464k requests in 12.38s, 304 MB read
+    8k errors (0 timeouts)
+</details>
+<details>
+  <summary> Time verbose results wrapped around localhost running Fastify /api/devices </summary>
+
+  ```sh
+  $ /usr/bin/time -l pnpm run bench:fastify
+  >            18.09  real
+  >             1.16  user
+  >             0.19  sys
+  >        129200128  maximum resident set size
+  >                0  average shared memory size
+  >                0  average unshared data size
+  >                0  average unshared stack size
+  >            55970  page reclaims
+  >              154  page faults
+  >                0  swaps
+  >                0  block input operations
+  >                0  block output operations
+  >                0  messages sent
+  >                8  messages received
+  >               10  signals received
+  >              655  voluntary context switches
+  >            12925  involuntary context switches
+  >       5487232381  instructions retired
+  >       2183373763  cycles elapsed
+  >         96192000  peak memory footprint
+  ```
 </details>
 
 <details>
