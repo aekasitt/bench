@@ -12,17 +12,23 @@
 ### Standard packages ###
 from json import dumps
 from logging import Logger, getLogger
-from typing import Any
+from socket import gaierror as SocketError
 
 ### Third-party packages ###
+from aiomcache.exceptions import ClientException
 from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
 
+### Local modules ###
+from bench_uvicorn.cache import get_memcached
+
 ### Initiate module logger ###
-logger: Logger = getLogger(__name__)
+logger: Logger = getLogger("uvicorn")
 
 
 async def health(
-  scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable,
+  scope: HTTPScope,
+  receive: ASGIReceiveCallable,
+  send: ASGISendCallable,
 ) -> None:
   """Health check endpoint"""
   await send(
@@ -41,7 +47,9 @@ async def health(
 
 
 async def get_devices(
-  scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable,
+  scope: HTTPScope,
+  receive: ASGIReceiveCallable,
+  send: ASGISendCallable,
 ) -> None:
   """Get static list of devices"""
   devices: tuple[dict[str, int | str], ...] = (
@@ -83,6 +91,67 @@ async def get_devices(
       "body": dumps(devices).encode("utf-8"),
     }
   )
+
+
+async def get_device_stats(
+  scope: HTTPScope,
+  receive: ASGIReceiveCallable,
+  send: ASGISendCallable,
+):
+  memcached = get_memcached()
+  try:
+    stats = await memcached.stats()
+    stats_data = {
+      "curr_items": stats.get(b"curr_items", 0),
+      "total_items": stats.get(b"total_items", 0),
+      "bytes": stats.get(b"bytes", 0),
+      "curr_connections": stats.get(b"curr_connections", 0),
+      "get_hits": stats.get(b"get_hits", 0),
+      "get_misses": stats.get(b"get_misses", 0),
+    }
+    await send(
+      {
+        "type": "http.response.start",
+        "status": 200,
+        "headers": [(b"Content-Type", b"application/json")],
+      }
+    )
+    await send(
+      {
+        "type": "http.response.body",
+        "body": dumps(stats_data).encode("utf-8"),
+      }
+    )
+  except (ClientException, SocketError):
+    logger.exception("Memcached error")
+    await send(
+      {
+        "type": "http.response.start",
+        "status": 500,
+        "headers": [(b"Content-Type", b"text/plain")],
+      }
+    )
+    await send(
+      {
+        "type": "http.response.body",
+        "body": "Memcached error occurred while retrieving stats",
+      }
+    )
+  except Exception:
+    logger.exception("Unknown error")
+    await send(
+      {
+        "type": "http.response.start",
+        "status": 500,
+        "headers": [(b"Content-Type", b"text/plain")],
+      }
+    )
+    await send(
+      {
+        "type": "http.response.body",
+        "body": "An unexpected error occurred while retrieving stats",
+      }
+    )
 
 
 __all__: tuple[str, ...] = ("health", "get_devices")
