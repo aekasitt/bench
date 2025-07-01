@@ -15,11 +15,9 @@ from typing import Any
 ### Local modules ###
 from asyncpg.protocol.protocol import Record
 
-
 class ConnectionMeta(type):
   def __instancecheck__(cls, instance: "Connection") -> bool:
     """TODO"""
-
 
 class Connection(metaclass=ConnectionMeta):
   """TODO"""
@@ -33,7 +31,6 @@ class Connection(metaclass=ConnectionMeta):
     """TODO"""
   async def close(self) -> None:
     """TODO"""
-
 
 async def connect(dsn: str, **kwargs: Any) -> Connection:
   """TODO"""

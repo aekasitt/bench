@@ -19,7 +19,6 @@ from typing import Any
 from asyncpg.connection import Connection, connect
 from asyncpg.protocol.protocol import Record
 
-
 class Pool:
   """TODO"""
 
@@ -28,7 +27,6 @@ class Pool:
   async def close(self) -> None:
     """TODO"""
 
-
 class PoolAcquireContext:
   """TODO"""
 
@@ -36,7 +34,6 @@ class PoolAcquireContext:
     """TODO"""
   async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
     """TODO"""
-
 
 def create_pool(
   dsn: str,
@@ -47,7 +44,6 @@ def create_pool(
   **kwargs: Any,
 ) -> Pool:
   """TODO"""
-
 
 __all__: tuple[str, ...] = (
   "Connection",

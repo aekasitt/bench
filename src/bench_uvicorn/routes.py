@@ -13,10 +13,11 @@
 from json import dumps
 from logging import Logger, getLogger
 from socket import gaierror as SocketError
+from typing import Any
 
 ### Third-party packages ###
 from aiomcache.exceptions import ClientException
-from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
+# from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
 
 ### Local modules ###
 from bench_uvicorn.cache import get_memcached
@@ -26,9 +27,7 @@ logger: Logger = getLogger("uvicorn")
 
 
 async def health(
-  scope: HTTPScope,
-  receive: ASGIReceiveCallable,
-  send: ASGISendCallable,
+  scope: Any, receive: Any, send: Any
 ) -> None:
   """Health check endpoint"""
   await send(
@@ -47,9 +46,7 @@ async def health(
 
 
 async def get_devices(
-  scope: HTTPScope,
-  receive: ASGIReceiveCallable,
-  send: ASGISendCallable,
+  scope: Any, receive: Any, send: Any
 ) -> None:
   """Get static list of devices"""
   devices: tuple[dict[str, int | str], ...] = (
@@ -94,20 +91,20 @@ async def get_devices(
 
 
 async def get_device_stats(
-  scope: HTTPScope,
-  receive: ASGIReceiveCallable,
-  send: ASGISendCallable,
-):
+  scope: Any,
+  receive: Any,
+  send: Any,
+) -> None:
   memcached = get_memcached()
   try:
     stats = await memcached.stats()
     stats_data = {
-      "curr_items": stats.get(b"curr_items", 0),
-      "total_items": stats.get(b"total_items", 0),
-      "bytes": stats.get(b"bytes", 0),
-      "curr_connections": stats.get(b"curr_connections", 0),
-      "get_hits": stats.get(b"get_hits", 0),
-      "get_misses": stats.get(b"get_misses", 0),
+      "curr_items": stats.get(b"curr_items", b"0").decode("utf-8"),
+      "total_items": stats.get(b"total_items", b"0").decode("utf-8"),
+      "bytes": stats.get(b"bytes", b"0").decode("utf-8"),
+      "curr_connections": stats.get(b"curr_connections", b"0").decode("utf-8"),
+      "get_hits": stats.get(b"get_hits", b"0").decode("utf-8"),
+      "get_misses": stats.get(b"get_misses", b"0").decode("utf-8"),
     }
     await send(
       {
@@ -134,7 +131,7 @@ async def get_device_stats(
     await send(
       {
         "type": "http.response.body",
-        "body": "Memcached error occurred while retrieving stats",
+        "body": b"Memcached error occurred while retrieving stats",
       }
     )
   except Exception:
@@ -149,7 +146,7 @@ async def get_device_stats(
     await send(
       {
         "type": "http.response.body",
-        "body": "An unexpected error occurred while retrieving stats",
+        "body": b"An unexpected error occurred while retrieving stats",
       }
     )
 

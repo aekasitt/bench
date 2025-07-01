@@ -12,32 +12,29 @@
 ### Standard packages ###
 from typing import Any, Callable, TypeVar
 
-
 F = TypeVar("F", bound=Callable[..., Any])
 
-
 def HTTPRouteHandler(
-    path: str,
-    *,
-    http_method: str,
-    sync_to_thread: bool = False,
-    status_code: None | int = None,
-    **kwargs: Any
+  path: str,
+  *,
+  http_method: str,
+  sync_to_thread: bool = False,
+  status_code: None | int = None,
+  **kwargs: Any,
 ) -> Callable[[F], F]:
-    """
-    HTTP Route Handler decorator for Litestar framework
+  """
+  HTTP Route Handler decorator for Litestar framework
 
-    Args:
-        path: The URL path for the route
-        http_method: The HTTP method (GET, POST, etc.)
-        sync_to_thread: Whether to run the handler in a thread pool
-        status_code: The status code to return
-        **kwargs: Additional keyword arguments
+  Args:
+      path: The URL path for the route
+      http_method: The HTTP method (GET, POST, etc.)
+      sync_to_thread: Whether to run the handler in a thread pool
+      status_code: The status code to return
+      **kwargs: Additional keyword arguments
 
-    Returns:
-        A decorator function that can be applied to handler functions
-    """
-    ...
-
+  Returns:
+      A decorator function that can be applied to handler functions
+  """
+  ...
 
 __all__: tuple[str, ...] = ("HTTPRouteHandler",)

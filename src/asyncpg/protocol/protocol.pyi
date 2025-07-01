@@ -15,7 +15,6 @@ from typing import Any, Dict, overload
 BUILTIN_TYPE_NAME_MAP: Dict[str, Any]
 NO_TIMEOUT: float = 0.0
 
-
 class Protocol:
   """PostgreSQL protocol implementation."""
 
@@ -32,7 +31,6 @@ class Protocol:
   async def fetchrow(self, query: str, *args: Any, **kwargs: Any) -> "Record" | None:
     """TODO"""
 
-
 class Record:
   """TODO"""
 
@@ -48,6 +46,5 @@ class Record:
 
   def get(self, key: int | str, default: Any = None) -> Any:
     """TODO"""
-
 
 __all__: tuple[str, ...] = ("Protocol", "Record", "NO_TIMEOUT", "BUILTIN_TYPE_NAME_MAP")

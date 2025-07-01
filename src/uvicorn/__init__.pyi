@@ -12,7 +12,6 @@ from uvicorn._types import ASGIApplication
 Host = str
 Port = int
 
-
 def run(
   app: ASGIApplication | Callable[..., Any] | str,
   *,
@@ -59,7 +58,6 @@ def run(
   **kwargs: Any,
 ) -> None:
   """run uvicorn application"""
-
 
 INTERFACE_ASGI3: str = "asgi3"
 INTERFACE_ASGI2: str = "asgi2"

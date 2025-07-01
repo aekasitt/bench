@@ -17,11 +17,11 @@ from .status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
 __all__: tuple[str, ...] = (
   "Starlette",
-  "Request", 
+  "Request",
   "JSONResponse",
   "PlainTextResponse",
   "Response",
   "Route",
   "HTTP_201_CREATED",
   "HTTP_500_INTERNAL_SERVER_ERROR",
-) 
+)

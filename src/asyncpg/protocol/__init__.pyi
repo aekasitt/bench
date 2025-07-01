@@ -14,7 +14,7 @@ from .protocol import Protocol, Record, NO_TIMEOUT, BUILTIN_TYPE_NAME_MAP
 
 __all__: tuple[str, ...] = (
   "Protocol",
-  "Record", 
+  "Record",
   "NO_TIMEOUT",
   "BUILTIN_TYPE_NAME_MAP",
-) 
+)
