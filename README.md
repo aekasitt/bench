@@ -18,6 +18,8 @@ Plus, it's fun.
 
 ## Results
 
+### Python FastAPI
+
 <details>
     <summary> Autocannon results on localhost running FastAPI /api/devices </summary>
 
@@ -69,6 +71,8 @@ Plus, it's fun.
     >         41125120  peak memory footprint
 </details>
 
+### Python Litestar
+
 <details>
     <summary> Autocannon results on localhost running Litestar /api/devices </summary>
 
@@ -118,6 +122,8 @@ Plus, it's fun.
     >       1481913630  cycles elapsed
     >         43058624  peak memory footprint
 </details>
+
+### NodeJS Fastify
 
 <details>
     <summary> Autocannon results on localhost running Fastify /api/devices </summary>
@@ -170,6 +176,8 @@ Plus, it's fun.
     >         96192000  peak memory footprint
 </details>
 
+### NodeJS Vanilla
+
 <details>
     <summary> Autocannon results on localhost running vanilla Node.js server /api/devices </summary>
 
@@ -221,6 +229,8 @@ Plus, it's fun.
     >         92702144  peak memory footprint
 </details>
 
+### Python uvicorn with compiled endpoints
+
 <details>
   <summary> Autocannon results on localhost running uvicorn with mypycified /api/devices </summary>
 
@@ -230,40 +240,45 @@ Plus, it's fun.
     ┌─────────┬────────┬────────┬─────────┬─────────┬───────────┬───────────┬─────────┐
     │ Stat    │ 2.5%   │ 50%    │ 97.5%   │ 99%     │ Avg       │ Stdev     │ Max     │
     ├─────────┼────────┼────────┼─────────┼─────────┼───────────┼───────────┼─────────┤
-    │ Latency │ 160 ms │ 282 ms │ 1116 ms │ 1596 ms │ 385.94 ms │ 519.27 ms │ 9008 ms │
+    │ Latency │ 210 ms │ 284 ms │ 1531 ms │ 1692 ms │ 333.63 ms │ 338.58 ms │ 4273 ms │
     └─────────┴────────┴────────┴─────────┴─────────┴───────────┴───────────┴─────────┘
-    ┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬────────┬─────────┐
-    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev  │ Min     │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼────────┼─────────┤
-    │ Req/Sec   │ 46,207  │ 46,207  │ 46,367  │ 47,039  │ 46,512  │ 328.22 │ 46,190  │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼────────┼─────────┤
-    │ Bytes/Sec │ 33.3 MB │ 33.3 MB │ 33.4 MB │ 33.9 MB │ 33.5 MB │ 238 kB │ 33.3 MB │
-    └───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┴─────────┘
+    ┌───────────┬─────┬──────┬─────────┬─────────┬─────────┬───────────┬─────────┐
+    │ Stat      │ 1%  │ 2.5% │ 50%     │ 97.5%   │ Avg     │ Stdev     │ Min     │
+    ├───────────┼─────┼──────┼─────────┼─────────┼─────────┼───────────┼─────────┤
+    │ Req/Sec   │ 0   │ 0    │ 49,151  │ 49,151  │ 42,250  │ 16,026.63 │ 45,149  │
+    ├───────────┼─────┼──────┼─────────┼─────────┼─────────┼───────────┼─────────┤
+    │ Bytes/Sec │ 0 B │ 0 B  │ 35.5 MB │ 35.5 MB │ 30.5 MB │ 11.6 MB   │ 32.6 MB │
+    └───────────┴─────┴──────┴─────────┴─────────┴─────────┴───────────┴─────────┘
+    
+    Req/Bytes counts sampled once per second.
+    # of samples: 8
+    
+    348k requests in 12.32s, 244 MB read
 </details>
 <details>
-  <summary> Time verbose results wrapped around localhost running uvicorn </summary>
+    <summary> Time verbose results wrapped around localhost running uvicorn </summary>
 
     $ /usr/bin/time -l bench-uvicorn
-    >            17.80  real
-    >            45.06  user
-    >             8.90  sys
-    >         32030720  maximum resident set size
+    >            25.31  real
+    >            60.10  user
+    >            10.97  sys
+    >         31211520  maximum resident set size
     >                0  average shared memory size
     >                0  average unshared data size
     >                0  average unshared stack size
-    >           225990  page reclaims
-    >             5070  page faults
+    >           227226  page reclaims
+    >             5088  page faults
     >                0  swaps
     >                0  block input operations
     >                0  block output operations
-    >           724741  messages sent
-    >           248407  messages received
+    >          1050129  messages sent
+    >           359899  messages received
     >              132  signals received
-    >             2170  voluntary context switches
-    >           625147  involuntary context switches
-    >       1150187160  instructions retired
-    >        752487685  cycles elapsed
-    >         20497664  peak memory footprint
+    >             3008  voluntary context switches
+    >           817230  involuntary context switches
+    >       1241151165  instructions retired
+    >        829603015  cycles elapsed
+    >         20989312  peak memory footprin
 </details>
 
 ## Contribution
