@@ -73,25 +73,50 @@ Plus, it's fun.
     <summary> Autocannon results on localhost running Litestar /api/devices </summary>
 
     Running 10s test @ http://localhost:8080/api/devices
-    10 connections
+    10000 connections
     
-    ┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬───────┐
-    │ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max   │
-    ├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼───────┤
-    │ Latency │ 1 ms │ 1 ms │ 1 ms  │ 2 ms │ 1.03 ms │ 0.41 ms │ 23 ms │
-    └─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴───────┘
-    ┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬────────┬─────────┐
-    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev  │ Min     │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼────────┼─────────┤
-    │ Req/Sec   │ 7,039   │ 7,039   │ 7,983   │ 8,043   │ 7,756.8 │ 356.17 │ 7,036   │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼────────┼─────────┤
-    │ Bytes/Sec │ 4.69 MB │ 4.69 MB │ 5.32 MB │ 5.37 MB │ 5.17 MB │ 237 kB │ 4.69 MB │
-    └───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┴─────────┘
-
+    ┌─────────┬────────┬────────┬─────────┬─────────┬───────────┬───────────┬─────────┐
+    │ Stat    │ 2.5%   │ 50%    │ 97.5%   │ 99%     │ Avg       │ Stdev     │ Max     │
+    ├─────────┼────────┼────────┼─────────┼─────────┼───────────┼───────────┼─────────┤
+    │ Latency │ 310 ms │ 401 ms │ 1909 ms │ 1963 ms │ 464.58 ms │ 362.87 ms │ 3811 ms │
+    └─────────┴────────┴────────┴─────────┴─────────┴───────────┴───────────┴─────────┘
+    ┌───────────┬─────────┬─────────┬─────────┬─────────┬───────────┬──────────┬─────────┐
+    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg       │ Stdev    │ Min     │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┼──────────┼─────────┤
+    │ Req/Sec   │ 1,998   │ 1,998   │ 49,151  │ 49,151  │ 41,242.34 │ 17,550.8 │ 1,998   │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┼──────────┼─────────┤
+    │ Bytes/Sec │ 1.33 MB │ 1.33 MB │ 32.8 MB │ 32.8 MB │ 27.5 MB   │ 11.7 MB  │ 1.33 MB │
+    └───────────┴─────────┴─────────┴─────────┴─────────┴───────────┴──────────┴─────────┘
+    
     Req/Bytes counts sampled once per second.
-    # of samples: 10
+    # of samples: 6
     
-    78k requests in 10.05s, 51.7 MB read
+    258k requests in 12.84s, 165 MB read</details>
+</details>
+<details>
+    <summary> Time verbose results wrapped around localhost running Litestar /api/devices </summary>
+
+    $ /usr/bin/time -l bench-litestar
+    >            21.22  real
+    >            81.36  user
+    >            16.25  sys
+    >         57901056  maximum resident set size
+    >                0  average shared memory size
+    >                0  average unshared data size
+    >                0  average unshared stack size
+    >           485505  page reclaims
+    >             5718  page faults
+    >                0  swaps
+    >                0  block input operations
+    >                0  block output operations
+    >          1034388  messages sent
+    >           327557  messages received
+    >              136  signals received
+    >             3432  voluntary context switches
+    >          1741851  involuntary context switches
+    >       2960132923  instructions retired
+    >       1481913630  cycles elapsed
+    >         43058624  peak memory footprint
 </details>
 
 <details>
