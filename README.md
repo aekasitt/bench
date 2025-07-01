@@ -1,5 +1,10 @@
 # Bench
 
+[![Languages](https://img.shields.io/github/languages/count/aekasitt/bench)](https://github.com/aekasitt/bench)
+[![Last commit](https://img.shields.io/github/last-commit/aekasitt/bench/master)](https://github.com/aekasitt/bench)
+[![Size](https://img.shields.io/github/repo-size/aekasitt/bench)](https://github.com/aekasitt/bench)
+[![Top](https://img.shields.io/github/languages/top/aekasitt/bench)](https://github.com/aekasitt/bench)
+
 [![Bench Banner](./static/bench-banner.svg)](https://github.com/aekasitt/bench/blob/master/static/bench-banner.svg)
 
 ## Roster
