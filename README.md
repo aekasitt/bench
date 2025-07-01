@@ -46,29 +46,27 @@ Plus, it's fun.
 <details>
   <summary> Time verbose results wrapped around localhost running FastAPI /api/devices </summary>
   
-  ```sh
-  $ /usr/bin/time -l bench-fastapi
-  >            24.33  real
-  >            81.27  user
-  >            15.54  sys
-  >         59867136  maximum resident set size
-  >                0  average shared memory size
-  >                0  average unshared data size
-  >                0  average unshared stack size
-  >           460461  page reclaims
-  >             5470  page faults
-  >                0  swaps
-  >                0  block input operations
-  >                0  block output operations
-  >           670126  messages sent
-  >           270275  messages received
-  >              133  signals received
-  >             3161  voluntary context switches
-  >          1697462  involuntary context switches
-  >       2795276474  instructions retired
-  >       1344843172  cycles elapsed
-  >         41125120  peak memory footprint
-  ```
+    $ /usr/bin/time -l bench-fastapi
+    >            24.33  real
+    >            81.27  user
+    >            15.54  sys
+    >         59867136  maximum resident set size
+    >                0  average shared memory size
+    >                0  average unshared data size
+    >                0  average unshared stack size
+    >           460461  page reclaims
+    >             5470  page faults
+    >                0  swaps
+    >                0  block input operations
+    >                0  block output operations
+    >           670126  messages sent
+    >           270275  messages received
+    >              133  signals received
+    >             3161  voluntary context switches
+    >          1697462  involuntary context switches
+    >       2795276474  instructions retired
+    >       1344843172  cycles elapsed
+    >         41125120  peak memory footprint
 </details>
 
 
@@ -125,54 +123,78 @@ Plus, it's fun.
 <details>
   <summary> Time verbose results wrapped around localhost running Fastify /api/devices </summary>
 
-  ```sh
-  $ /usr/bin/time -l pnpm run bench:fastify
-  >            18.09  real
-  >             1.16  user
-  >             0.19  sys
-  >        129200128  maximum resident set size
-  >                0  average shared memory size
-  >                0  average unshared data size
-  >                0  average unshared stack size
-  >            55970  page reclaims
-  >              154  page faults
-  >                0  swaps
-  >                0  block input operations
-  >                0  block output operations
-  >                0  messages sent
-  >                8  messages received
-  >               10  signals received
-  >              655  voluntary context switches
-  >            12925  involuntary context switches
-  >       5487232381  instructions retired
-  >       2183373763  cycles elapsed
-  >         96192000  peak memory footprint
-  ```
+    $ /usr/bin/time -l pnpm run bench:fastify
+    >            18.09  real
+    >             1.16  user
+    >             0.19  sys
+    >        129200128  maximum resident set size
+    >                0  average shared memory size
+    >                0  average unshared data size
+    >                0  average unshared stack size
+    >            55970  page reclaims
+    >              154  page faults
+    >                0  swaps
+    >                0  block input operations
+    >                0  block output operations
+    >                0  messages sent
+    >                8  messages received
+    >               10  signals received
+    >              655  voluntary context switches
+    >            12925  involuntary context switches
+    >       5487232381  instructions retired
+    >       2183373763  cycles elapsed
+    >         96192000  peak memory footprint
 </details>
 
 <details>
     <summary> Autocannon results on localhost running vanilla Node.js server /api/devices </summary>
-  
+
     Running 10s test @ http://localhost:8080/api/devices
-    10 connections
+    10000 connections
     
-    ┌─────────┬──────┬──────┬───────┬──────┬─────────┬────────┬───────┐
-    │ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev  │ Max   │
-    ├─────────┼──────┼──────┼───────┼──────┼─────────┼────────┼───────┤
-    │ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0.01 ms │ 0.2 ms │ 27 ms │
-    └─────────┴──────┴──────┴───────┴──────┴─────────┴────────┴───────┘
-    ┌───────────┬─────────┬─────────┬─────────┬────────┬───────────┬──────────┬─────────┐
-    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%  │ Avg       │ Stdev    │ Min     │
-    ├───────────┼─────────┼─────────┼─────────┼────────┼───────────┼──────────┼─────────┤
-    │ Req/Sec   │ 31,439  │ 31,439  │ 39,231  │ 40,383 │ 38,584.81 │ 2,581.75 │ 31,425  │
-    ├───────────┼─────────┼─────────┼─────────┼────────┼───────────┼──────────┼─────────┤
-    │ Bytes/Sec │ 22.5 MB │ 22.5 MB │ 28.1 MB │ 29 MB  │ 27.7 MB   │ 1.85 MB  │ 22.5 MB │
-    └───────────┴─────────┴─────────┴─────────┴────────┴───────────┴──────────┴─────────┘
+    ┌─────────┬────────┬────────┬────────┬─────────┬───────────┬───────────┬──────────┐
+    │ Stat    │ 2.5%   │ 50%    │ 97.5%  │ 99%     │ Avg       │ Stdev     │ Max      │
+    ├─────────┼────────┼────────┼────────┼─────────┼───────────┼───────────┼──────────┤
+    │ Latency │ 132 ms │ 176 ms │ 479 ms │ 1327 ms │ 246.75 ms │ 588.03 ms │ 11079 ms │
+    └─────────┴────────┴────────┴────────┴─────────┴───────────┴───────────┴──────────┘
+    ┌───────────┬─────────┬─────────┬─────────┬─────────┬──────────┬───────────┬─────────┐
+    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg      │ Stdev     │ Min     │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼──────────┼───────────┼─────────┤
+    │ Req/Sec   │ 9,703   │ 9,703   │ 41,151  │ 59,359  │ 39,077.2 │ 11,505.71 │ 9,699   │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼──────────┼───────────┼─────────┤
+    │ Bytes/Sec │ 6.96 MB │ 6.96 MB │ 29.5 MB │ 42.6 MB │ 28 MB    │ 8.25 MB   │ 6.95 MB │
+    └───────────┴─────────┴─────────┴─────────┴─────────┴──────────┴───────────┴─────────┘
     
     Req/Bytes counts sampled once per second.
     # of samples: 10
     
-    386k requests in 10.04s, 277 MB read
+    403k requests in 12.45s, 280 MB read
+    3k errors (0 timeouts)
+</details>
+<details>
+    <summary> Time verbose results wrapped around localhost running vanilla Node.js server /api/devices </summary>
+
+    $ /usr/bin/time -l pnpm run bench:vanilla
+    >            18.88  real
+    >             9.63  user
+    >             2.64  sys
+    >        228696064  maximum resident set size
+    >                0  average shared memory size
+    >                0  average unshared data size
+    >                0  average unshared stack size
+    >            92464  page reclaims
+    >               38  page faults
+    >                0  swaps
+    >                0  block input operations
+    >                0  block output operations
+    >           399198  messages sent
+    >           399198  messages received
+    >               11  signals received
+    >              301  voluntary context switches
+    >            38188  involuntary context switches
+    >       5424555803  instructions retired
+    >       2089790749  cycles elapsed
+    >         92702144  peak memory footprint
 </details>
 
 <details>
@@ -197,29 +219,27 @@ Plus, it's fun.
 <details>
   <summary> Time verbose results wrapped around localhost running uvicorn </summary>
 
-  ```sh
-  $ /usr/bin/time -l bench-uvicorn
-  >            17.80  real
-  >            45.06  user
-  >             8.90  sys
-  >         32030720  maximum resident set size
-  >                0  average shared memory size
-  >                0  average unshared data size
-  >                0  average unshared stack size
-  >           225990  page reclaims
-  >             5070  page faults
-  >                0  swaps
-  >                0  block input operations
-  >                0  block output operations
-  >           724741  messages sent
-  >           248407  messages received
-  >              132  signals received
-  >             2170  voluntary context switches
-  >           625147  involuntary context switches
-  >       1150187160  instructions retired
-  >        752487685  cycles elapsed
-  >         20497664  peak memory footprint
-  ```
+    $ /usr/bin/time -l bench-uvicorn
+    >            17.80  real
+    >            45.06  user
+    >             8.90  sys
+    >         32030720  maximum resident set size
+    >                0  average shared memory size
+    >                0  average unshared data size
+    >                0  average unshared stack size
+    >           225990  page reclaims
+    >             5070  page faults
+    >                0  swaps
+    >                0  block input operations
+    >                0  block output operations
+    >           724741  messages sent
+    >           248407  messages received
+    >              132  signals received
+    >             2170  voluntary context switches
+    >           625147  involuntary context switches
+    >       1150187160  instructions retired
+    >        752487685  cycles elapsed
+    >         20497664  peak memory footprint
 </details>
 
 ## Contribution
