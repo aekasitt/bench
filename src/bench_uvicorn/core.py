@@ -16,9 +16,7 @@ from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
 from bench_uvicorn.routes import get_devices, health
 
 
-async def app(
-  scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable
-) -> None:
+async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
   assert scope["type"] == "http"
   path: str = scope["path"]
   method: str = scope["method"]
