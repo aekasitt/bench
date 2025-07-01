@@ -171,7 +171,7 @@ async def get_device_stats(memcached: Memcached):
 def main() -> None:
   from uvicorn import run
 
-  run(app, port=8080)
+  run("bench_fastapi.core:app", log_level="error", port=8080, workers=64)
 
 
 if __name__ == "__main__":
