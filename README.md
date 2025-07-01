@@ -22,26 +22,56 @@ Plus, it's fun.
     <summary> Autocannon results on localhost running FastAPI /api/devices </summary>
 
     Running 10s test @ http://localhost:8080/api/devices
-    10 connections
+    10000 connections
     
-    ┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬───────┐
-    │ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max   │
-    ├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼───────┤
-    │ Latency │ 1 ms │ 2 ms │ 3 ms  │ 3 ms │ 1.83 ms │ 0.58 ms │ 22 ms │
-    └─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴───────┘
-    ┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
-    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev   │ Min     │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
-    │ Req/Sec   │ 4,327   │ 4,327   │ 4,399   │ 4,479   │ 4,404   │ 38.26   │ 4,327   │
-    ├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
-    │ Bytes/Sec │ 2.89 MB │ 2.89 MB │ 2.93 MB │ 2.99 MB │ 2.94 MB │ 25.3 kB │ 2.89 MB │
-    └───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+    running [====================] 100%
+    ┌─────────┬────────┬────────┬─────────┬─────────┬───────────┬───────────┬─────────┐
+    │ Stat    │ 2.5%   │ 50%    │ 97.5%   │ 99%     │ Avg       │ Stdev     │ Max     │
+    ├─────────┼────────┼────────┼─────────┼─────────┼───────────┼───────────┼─────────┤
+    │ Latency │ 254 ms │ 376 ms │ 1503 ms │ 4026 ms │ 567.36 ms │ 712.97 ms │ 8347 ms │
+    └─────────┴────────┴────────┴─────────┴─────────┴───────────┴───────────┴─────────┘
+    ┌───────────┬────────┬────────┬────────┬─────────┬──────────┬──────────┬─────────┐
+    │ Stat      │ 1%     │ 2.5%   │ 50%    │ 97.5%   │ Avg      │ Stdev    │ Min     │
+    ├───────────┼────────┼────────┼────────┼─────────┼──────────┼──────────┼─────────┤
+    │ Req/Sec   │ 28,415 │ 28,415 │ 46,559 │ 47,455  │ 42,865.6 │ 7,257.98 │ 28,405  │
+    ├───────────┼────────┼────────┼────────┼─────────┼──────────┼──────────┼─────────┤
+    │ Bytes/Sec │ 19 MB  │ 19 MB  │ 31 MB  │ 31.7 MB │ 28.6 MB  │ 4.84 MB  │ 18.9 MB │
+    └───────────┴────────┴────────┴────────┴─────────┴──────────┴──────────┴─────────┘
     
     Req/Bytes counts sampled once per second.
-    # of samples: 10
+    # of samples: 5
     
-    44k requests in 10.04s, 29.4 MB read
+    236k requests in 15.68s, 143 MB read
+    12k errors (0 timeouts)
 </details>
+<details>
+  <summary> Time verbose results wrapped around localhost running FastAPI /api/devices </summary>
+  
+  ```sh
+  $ /usr/bin/time -l bench-fastapi
+  >            24.33  real
+  >            81.27  user
+  >            15.54  sys
+  >         59867136  maximum resident set size
+  >                0  average shared memory size
+  >                0  average unshared data size
+  >                0  average unshared stack size
+  >           460461  page reclaims
+  >             5470  page faults
+  >                0  swaps
+  >                0  block input operations
+  >                0  block output operations
+  >           670126  messages sent
+  >           270275  messages received
+  >              133  signals received
+  >             3161  voluntary context switches
+  >          1697462  involuntary context switches
+  >       2795276474  instructions retired
+  >       1344843172  cycles elapsed
+  >         41125120  peak memory footprint
+  ```
+</details>
+
 
 <details>
     <summary> Autocannon results on localhost running Litestar /api/devices </summary>
