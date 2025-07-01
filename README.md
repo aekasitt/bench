@@ -1,11 +1,19 @@
-# Bench: performance is a feature
+# Bench
 
-## FastAPI (python) vs Fastify (node) vs Litestar (python) vs Vanilla (node)
+[![Bench Banner](./static/bench-banner.svg)](https://github.com/aekasitt/bench/blob/master/static/bench-banner.svg)
+
+## Roster
+
+* FastAPI (python)
+* Fastify (node) 
+* Litestar (python)
+* Vanilla (node)
+* Plain ASGI on Uvicorn (python)
 
 This repository uses [autocannon](https://npmjs.com/package/autocannon) for basic and
 non-reproduceable-on-production test for a web server implemented by [FastAPI](https://fastapi.tiangolo.com),
-[Fastify](https://fastify.dev), [Litestar](https://litestar.dev) and simple vanilla implementation
-of a web server on [Node.js](https://nodejs.org)
+[Fastify](https://fastify.dev), [Litestar](https://litestar.dev), simple vanilla implementation
+of a web server on [Node.js](https://nodejs.org) and a simple plain ASGI implementation on [Uvicorn](https://uvicorn.org) webserver.
 
 ## Why work on something if it does not reproduce on production?
 
