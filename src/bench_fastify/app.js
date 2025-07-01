@@ -1,7 +1,6 @@
 /* ~~/src/bench_fastify/app.js */
 
 // imports
-import cluster from 'node:cluster'
 import histogram from './metrics.js'
 import save from './devices.js'
 import { randomUUID } from 'node:crypto'
@@ -93,20 +92,8 @@ server.setNotFoundHandler((_, reply) => {
   reply.status(404).type('text/plain').send('Not Found')
 })
 
-const NUM_WORKERS = 8
-if (cluster.isPrimary) {
-  console.log(`Node is listening on http://0.0.0.0:8080 ...`)
-  for (let i = 0; i < NUM_WORKERS; i++) {
-    cluster.fork();
-  }
-
-  cluster.on(
-    "exit",
-    (worker, code, signal) => console.log(`worker ${worker.process.pid} died`),
-  );
-} else {
-  server.listen({
-    host: '0.0.0.0',
-    port: 8080,
-  })
-}
+console.log(`Node is listening on http://0.0.0.0:8080 ...`)
+server.listen({
+  host: '0.0.0.0',
+  port: 8080,
+})
