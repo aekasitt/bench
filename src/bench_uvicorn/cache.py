@@ -26,13 +26,13 @@ class Memcached:
   client: Client
 
   def __enter__(self) -> "Memcached":
-    self.client = Client(MEMCACHED_HOST)
+    self.client = Client([MEMCACHED_HOST])
     return self
 
   def __exit__(
     self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
   ) -> None:
-    del self.client
+    self.client.disconnect_all()
 
 
 __all__: tuple[str, ...] = ("Memcached",)

@@ -13,7 +13,7 @@
 from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
 
 ### Local modules ###
-from bench_uvicorn.routes import get_devices, get_device_stats, health
+from bench_uvicorn.routes import create_device, get_devices, get_device_stats, health
 
 
 async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
@@ -23,6 +23,8 @@ async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCall
 
   if path == "/api/devices" and method == "GET":
     await get_devices(scope, receive, send)
+  if path == "/api/devices" and method == "POST":
+    await create_device(scope, receive, send)
   elif path == "/api/devices/stats" and method == "GET":
     await get_device_stats(scope, receive, send)
   elif path == "/healthz" and method == "GET":

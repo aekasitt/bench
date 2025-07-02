@@ -10,33 +10,28 @@
 # *************************************************************
 
 ### Standard packages ###
-from logging import Logger, getLogger
+from types import TracebackType
+from typing import Type
 
 ### Third-party packages ###
 from asyncpg import Connection, connect
-from asyncpg.exceptions import PostgresError
 
 ### Local modules ###
 from bench_uvicorn.configs import POSTGRES_URI
 
-### Initiate module logger ###
-logger: Logger = getLogger(__name__)
+
+class Postgres:
+  connection: Connection
+
+  async def __aenter__(self) -> "Postgres":
+    self.connection = await connect(POSTGRES_URI)
+    return self
+
+  async def __aexit__(
+    self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
+  ) -> None:
+    # del self.connection
+    ...
 
 
-async def get_database() -> Connection:
-  """Get a database connection"""
-  try:
-    connection = await connect(POSTGRES_URI)
-    logger.info("Database connection created")
-    return connection
-  except PostgresError as e:
-    logger.error(f"Error creating PostgreSQL connection: {e}")
-    raise ValueError("Failed to create PostgreSQL connection")
-
-
-async def get_postgres_connection() -> Connection:
-  """Get PostgreSQL connection instance"""
-  return await get_database()
-
-
-__all__ = ("get_database", "get_postgres_connection")
+__all__: tuple[str, ...] = ("Postgres",)

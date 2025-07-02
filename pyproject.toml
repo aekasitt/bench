@@ -52,11 +52,7 @@ exclude = [
   '/src/press',
   '/src/bench_starlette',
   '/src/bench_vanilla',
-  '/src/bench_uvicorn/cache.py',
-  '/src/bench_uvicorn/configs.py',
   '/src/bench_uvicorn/core.py',
-  '/src/bench_uvicorn/database.py',
-  '/src/bench_uvicorn/metrics.py',
 ]
 mypy-args = [
   '--disallow-untyped-calls',
@@ -66,7 +62,11 @@ mypy-args = [
 ]
 packages = [ 'src/bench_starlette' ]
 only-include = [
+  '/src/bench_uvicorn/cache.py',
+  '/src/bench_uvicorn/configs.py',
   '/src/bench_uvicorn/routes.py',
+  '/src/bench_uvicorn/database.py',
+  '/src/bench_uvicorn/metrics.py',
 ]
 
 

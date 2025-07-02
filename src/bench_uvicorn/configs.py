@@ -20,7 +20,7 @@ try:
 except ImportError:
   pass
 
-MEMCACHED_HOST: str = getenv("MEMCACHED_HOST", "0.0.0.0")
+MEMCACHED_HOST: str = getenv("MEMCACHED_HOST", "127.0.0.1")
 MEMCACHED_POOL_SIZE: int = int(getenv("MEMCACHED_POOL_SIZE", "500"))
 POSTGRES_POOL_SIZE: int = int(getenv("POSTGRES_POOL_SIZE", "20"))
 POSTGRES_URI: str = getenv("POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb")
