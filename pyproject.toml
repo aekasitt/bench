@@ -26,6 +26,7 @@ bench-fastapi = 'bench_fastapi.core:main'
 bench-litestar = 'bench_litestar.core:main'
 bench-starlette = 'bench_starlette.core:main'
 bench-uvicorn = 'bench_uvicorn.core:main'
+press-migrate = 'press.migrate:main'
 
 
 [tool.hatch.build.targets.wheel]
@@ -34,6 +35,7 @@ packages = [
   'src/bench_litestar',
   'src/bench_starlette',
   'src/bench_uvicorn',
+  'src/press',
 ]
 
 
@@ -47,6 +49,7 @@ exclude = [
   '/src/bench_fastapi',
   '/src/bench_fastify',
   '/src/bench_litestar',
+  '/src/press',
   '/src/bench_starlette',
   '/src/bench_vanilla',
   '/src/bench_uvicorn/cache.py',
