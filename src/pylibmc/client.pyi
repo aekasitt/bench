@@ -17,10 +17,10 @@ class Client:
   ) -> None:
     """TODO"""
 
-  def delete(self, key: bytes) -> bool:
+  def clone(self) -> None:
     """TODO"""
 
-  def set(self, key: bytes | str, value: bytes, exptime: int = 0, flags: int = 0) -> bool:
+  def delete(self, key: bytes) -> bool:
     """TODO"""
 
   def get(self, key: bytes | str) -> None | bytes:
@@ -32,7 +32,7 @@ class Client:
   def get_stats(self, obj: Any) -> tuple[tuple[str, Any], ...]:
     """TODO"""
 
-  def close(self) -> None:
+  def set(self, key: bytes | str, value: bytes, exptime: int = 0, flags: int = 0) -> bool:
     """TODO"""
 
 
