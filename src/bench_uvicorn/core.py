@@ -32,7 +32,7 @@ async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCall
 def main() -> None:
   from uvicorn import run
 
-  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=1)
+  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=64)
 
 
 if __name__ == "__main__":
