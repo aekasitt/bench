@@ -8,12 +8,14 @@ from typing import Any
 
 class Client:
   def __init__(
-    self, host: str = "127.0.0.1", port: int = 11211, pool_size: int = 10, **kwargs: Any
+    self,
+    server: str,
+    behaviors: None | dict[str, str] = None,
+    binary: bool = False,
+    username: None | str = None,
+    password: None | str = None,
   ) -> None:
     """TODO"""
-
-  def cache_memlimit(self, memlimit: int) -> bool:
-    """The memcached "cache_memlimit" command."""
 
   def delete(self, key: bytes) -> bool:
     """TODO"""
@@ -24,8 +26,11 @@ class Client:
   def get(self, key: bytes | str) -> None | bytes:
     """TODO"""
 
-  def stats(self) -> dict[bytes, bytes]:
-    """The memcached "stats" command."""
+  def get_behaviors(self) -> dict[str, int]:
+    """TODO"""
+
+  def get_stats(self, obj: Any) -> tuple[tuple[str, Any], ...]:
+    """TODO"""
 
   def close(self) -> None:
     """TODO"""

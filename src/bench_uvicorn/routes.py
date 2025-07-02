@@ -16,7 +16,6 @@ from socket import gaierror as SocketError
 from typing import Any
 
 ### Third-party packages ###
-from pymemcache.exceptions import MemcacheError
 # from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
 
 ### Local modules ###
@@ -92,17 +91,26 @@ async def get_device_stats(
   send: Any,
 ) -> None:
   try:
-    stats: dict[bytes, bytes] = {}
+    stats: dict[str, int] = {}
     with Memcached() as memcached:
-      stats = memcached.client.stats()
+      stats = memcached.client.get_behaviors()  # FIXME find out what's causing get_stats error
+    ### TODO: replace behaviors with stats ###
+    # stats_data = {
+    #   "curr_items": stats.get(b"curr_items", 0),
+    #   "total_items": stats.get(b"total_items", 0),
+    #   "bytes": stats.get(b"bytes", 0),
+    #   "curr_connections": stats.get(b"curr_connections", 0),
+    #   "get_hits": stats.get(b"get_hits", 0),
+    #   "get_misses": stats.get(b"get_misses", 0),
+    # }
     stats_data = {
-      "curr_items": stats.get(b"curr_items", 0),
-      "total_items": stats.get(b"total_items", 0),
-      "bytes": stats.get(b"bytes", 0),
-      "curr_connections": stats.get(b"curr_connections", 0),
-      "get_hits": stats.get(b"get_hits", 0),
-      "get_misses": stats.get(b"get_misses", 0),
+      "connect_timeout": stats.get("connect_timeout", 0),
+      "no_block": stats.get("no_block", 0),
+      "num_replicas": stats.get("num_replicats", 0),
+      "receive_timeout": stats.get("receive_timeout", 0),
+      "send_timeout": stats.get("send_timeout", 0),
     }
+    ### TODO: replace behaviors with stats ###
     await send(
       {
         "type": "http.response.start",
@@ -116,7 +124,7 @@ async def get_device_stats(
         "body": dumps(stats_data).encode("utf-8"),
       }
     )
-  except (MemcacheError, SocketError) as e:
+  except (SocketError, ValueError) as e:
     logger.exception(f"Memcached error: {e}")
     await send(
       {

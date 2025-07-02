@@ -14,10 +14,10 @@ from types import TracebackType
 from typing import Type
 
 ### Third-party packages ###
-from pymemcache.client.base import Client
+from pylibmc.client import Client
 
 ### Local modules ###
-from bench_litestar.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
+from bench_uvicorn.configs import MEMCACHED_HOST
 
 
 class Memcached:
@@ -26,16 +26,13 @@ class Memcached:
   client: Client
 
   def __enter__(self) -> "Memcached":
-    self.client = Client(f"{MEMCACHED_HOST}:11211")  #, max_pool_size=MEMCACHED_POOL_SIZE)
+    self.client = Client(MEMCACHED_HOST)
     return self
 
   def __exit__(
-    self,
-    exc_type: None | Type[BaseException],
-    exc: Type[BaseException],
-    tb: TracebackType
+    self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
   ) -> None:
-    self.client.close()
+    del self.client
 
 
 __all__: tuple[str, ...] = ("Memcached",)

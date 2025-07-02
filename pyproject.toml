@@ -10,7 +10,7 @@ dependencies = [
   'litestar >=2.16.0',
   'msgspec >=0.19.0',
   'prometheus-client >=0.21.1',
-  'pymemcache >=4.0.0',
+  'pylibmc >=1.6.3',
   'starlette >=0.37.0',
   'uvicorn >=0.34.0',
 ]
