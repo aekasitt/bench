@@ -29,7 +29,7 @@ async def create_database() -> None:
     for drop in map(connection.execute, table_drops):
       result: str = await drop
       print(f"Create result: { result }")
-    table_creates: tuple[str, ...] = ( 
+    table_creates: tuple[str, ...] = (
        """
        CREATE TABLE IF NOT EXISTS fastapi_device (
          id SERIAL PRIMARY KEY,
