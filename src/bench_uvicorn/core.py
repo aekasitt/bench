@@ -32,9 +32,10 @@ async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCall
 
 
 def main() -> None:
+  from multiprocessing import cpu_count
   from uvicorn import run
 
-  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=64)
+  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=cpu_count())
 
 
 if __name__ == "__main__":
