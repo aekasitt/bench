@@ -82,11 +82,12 @@
     />
   <text
     font-family='Poster'
-    font-size='15rem'
+    font-size='16rem'
+    letter-spacing='1.6rem'
     text-anchor='left'
     x='16rem'
     y='9rem'>
-    BENCH
+    ยกเวท
   </text>
   <text
     font-family='Arial'
