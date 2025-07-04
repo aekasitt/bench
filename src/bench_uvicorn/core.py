@@ -23,7 +23,7 @@ async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCall
 
   if path == "/api/devices" and method == "GET":
     await get_devices(scope, receive, send)
-  if path == "/api/devices" and method == "POST":
+  elif path == "/api/devices" and method == "POST":
     await create_device(scope, receive, send)
   elif path == "/api/devices/stats" and method == "GET":
     await get_device_stats(scope, receive, send)
