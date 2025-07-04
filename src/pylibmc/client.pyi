@@ -3,7 +3,7 @@
 Type stubs for pymemcache base Client
 """
 
-from typing import Any
+from typing import Any, Final
 
 Key = bytes | str
 
@@ -28,7 +28,7 @@ class Client:
   def disconnect_all(self) -> None:
     """Disconnect from all servers and reset state."""
 
-  def get(self, key: bytes | str) -> None | bytes:
+  def get(self, key: Key) -> None | bytes:
     """TODO"""
 
   def get_behaviors(self) -> dict[str, int]:
@@ -43,4 +43,4 @@ class Client:
     """TODO"""
 
 
-__all__: tuple[str, ...] = ("Client",)
+__all__: Final[tuple[str, ...]] = ("Client",)
