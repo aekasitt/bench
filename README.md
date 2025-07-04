@@ -14,7 +14,7 @@
 * Litestar (python)
 * Vanilla (node)
 * Starlette (python)
-* ASGI spec, henceforth called "Spartan" (python)
+* ASGI specs without framework, henceforth called "Spartan" (python)
 
 This repository uses [autocannon](https://npmjs.com/package/autocannon) for basic and
 non-reproduceable-on-production test for a web server implemented by [FastAPI](https://fastapi.tiangolo.com),
