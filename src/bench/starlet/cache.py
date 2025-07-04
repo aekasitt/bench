@@ -14,12 +14,11 @@ from logging import Logger, getLogger
 from typing import Final
 
 ### Third-party packages ###
-from aiomcache import Client
-from aiomcache.exceptions import ClientException
+from pylibmc.client import Client
 from starlette.exceptions import HTTPException
 
 ### Local modules ###
-from bench.starlet.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
+from bench.starlet.configs import MEMCACHED_HOST
 
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
@@ -28,10 +27,10 @@ logger: Logger = getLogger(__name__)
 def get_memcached() -> Client:
   """Get Memcached client instance"""
   try:
-    client = Client(host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE)
+    client = Client([MEMCACHED_HOST])
     logger.info("Memcached pool created successfully")
     return client
-  except ClientException as e:
+  except ValueError as e:
     raise HTTPException(status_code=503, detail=f"Memcached error: {e}")
 
 

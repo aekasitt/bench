@@ -18,7 +18,6 @@ from typing import Any
 from uuid import uuid4 as uuid
 
 ### Third-party packages ###
-from aiomcache.exceptions import ClientException
 from asyncpg.exceptions import PostgresError
 from orjson import dumps
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -148,7 +147,7 @@ async def create_device(request: Request) -> JSONResponse:
       status_code=HTTP_500_INTERNAL_SERVER_ERROR,
     )
 
-  except (ClientException, SocketError):
+  except (SocketError, ValueError):
     logger.exception("Memcached error")
     return JSONResponse(
       {"detail": "Memcached Database error occurred while creating device"},
@@ -167,18 +166,19 @@ async def get_device_stats(request: Request) -> JSONResponse:
   """Get memcached statistics"""
   try:
     memcached = get_memcached()
-    stats = await memcached.stats()
+    stats = memcached.get_stats()
+    _, result = stats[0]
     return JSONResponse(
       {
-        "curr_items": stats.get(b"curr_items", 0),
-        "total_items": stats.get(b"total_items", 0),
-        "bytes": stats.get(b"bytes", 0),
-        "curr_connections": stats.get(b"curr_connections", 0),
-        "get_hits": stats.get(b"get_hits", 0),
-        "get_misses": stats.get(b"get_misses", 0),
+        "curr_items": result.get(b"curr_items", 0),
+        "total_items": result.get(b"total_items", 0),
+        "bytes": result.get(b"bytes", 0),
+        "curr_connections": result.get(b"curr_connections", 0),
+        "get_hits": result.get(b"get_hits", 0),
+        "get_misses": result.get(b"get_misses", 0),
       }
     )
-  except (ClientException, SocketError):
+  except (SocketError, ValueError):
     logger.exception("Memcached error")
     return JSONResponse(
       {"detail": "Memcached error occurred while retrieving stats"},
