@@ -58,7 +58,7 @@ dependencies = [
   'hatch-mypyc >=0.16.0',
   'mypy >=1.15.0',
 ]
-enable-by-default = false
+enable-by-default = true
 exclude = [
   '/src/bench/fastapi',
   '/src/bench/fastify',
