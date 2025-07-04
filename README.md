@@ -380,6 +380,29 @@ open-sourced registry defined under `pyproject.toml` file.
 
 1. [Lesson 236](https://github.com/antonputra/tutorials/tree/main/lessons/236) by [@antonputra](https://github.com/antonputra)
 2. [YT: FastAPI (Python) vs Node.js Performance](https://youtu.be/i3TcSeRO8gs)
+3. [โปสเตอร์ - Poster](https://www.f0nt.com/release/sov-poster) typeface by [uvSOV - Worawut Thanawatanawanich](https://fb.com/worawut.thanawatanawanich)
+4. [Compiling Black with mypyc, Pt.1 - Initial Steps](https://ichard26.github.io/blog/2022/05/compiling-black-with-mypyc-part-1/)
+  by [Richard Si](https://ichard26.github.io) [@ichard26](https://github.com/ichard26)
+5. [Compiling Black with mypyc, Pt.2 - Optimization](https://ichard26.github.io/blog/2022/05/compiling-black-with-mypyc-part-2/)
+  by [Richard Si](https://ichard26.github.io) [@ichard26](https://github.com/ichard26)
+6. [Compiling Black with mypyc, Pt.3 - Deployment](https://ichard26.github.io/blog/2022/05/compiling-black-with-mypyc-part-3/)
+  by [Richard Si](https://ichard26.github.io) [@ichard26](https://github.com/ichard26)
+7. [You Should Compile Your Python And Here’s Why](https://blog.glyph.im/2022/04/you-should-compile-your-python-and-heres-why.html)
+  by [Glyph](https://blog.glyph.im) [@glyph](https://github.com/glyph)
+8. [mypyc/mypyc - Compile type annotated Python to fast C extensions ](https://github.com/mypyc/mypyc)
+  for issue tracking and [docs](https://mypyc.readthedocs.io)
+9. For `mypyc` implementation, go to 
+  [python/mypy:mypyc](https://github.com/python/mypy/tree/master/mypyc)
+  by [mypy - Optional Static Typing for Python](https://mypy-lang.org);
+  Specials to devs working on [mypyc] commits:
+    * [Jukka Lehtosalo](https://x.com/jukkaleh) [@JukkaL](https://github.com/Jukkal)
+    * Piotr Sawicki [@p-sawicki](https://github.com/p-sawicki)  
+    * Jahongir Qurbonov [@Jahongir-Qurbonov](https://github.com/Jahongir-Qurbonov)
+    * Stanislav Terliakov [@sterliakov](https://github.com/sterliakov)
+    * Advait Dixit [@advait-dixit](https://github.com/advait-dixit)
+9. [ofek/hatch-mypyc](https://github.com/ofek/hatch-mypyc)
+  by [Ofek Lev](https://ofek.dev) [@ofek](https://github.com/ofek)
+
 
 ## License
 
