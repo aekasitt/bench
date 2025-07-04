@@ -246,10 +246,62 @@ Plus, it's fun.
     >         92702144  peak memory footprint
 </details>
 
-### Python uvicorn with compiled endpoints
+### Python Starlette
 
 <details>
-  <summary> Autocannon results on localhost running Spartan /api/devices </summary>
+    <summary> Autocannon results on localhost running Starlette /api/devices </summary>
+
+    Running 10s test @ http://localhost:8080/api/devices
+    10000 connections
+    
+    ┌─────────┬────────┬────────┬────────┬─────────┬───────────┬───────────┬─────────┐
+    │ Stat    │ 2.5%   │ 50%    │ 97.5%  │ 99%     │ Avg       │ Stdev     │ Max     │
+    ├─────────┼────────┼────────┼────────┼─────────┼───────────┼───────────┼─────────┤
+    │ Latency │ 201 ms │ 217 ms │ 314 ms │ 1606 ms │ 256.18 ms │ 213.64 ms │ 1786 ms │
+    └─────────┴────────┴────────┴────────┴─────────┴───────────┴───────────┴─────────┘
+    ┌───────────┬─────────┬─────────┬─────────┬─────────┬───────────┬───────────┬─────────┐
+    │ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg       │ Stdev     │ Min     │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┼───────────┼─────────┤
+    │ Req/Sec   │ 1,911   │ 1,911   │ 49,151  │ 63,519  │ 45,485.23 │ 16,043.99 │ 1,911   │
+    ├───────────┼─────────┼─────────┼─────────┼─────────┼───────────┼───────────┼─────────┤
+    │ Bytes/Sec │ 1.27 MB │ 1.27 MB │ 32.8 MB │ 42.4 MB │ 30.3 MB   │ 10.7 MB   │ 1.27 MB │
+    └───────────┴─────────┴─────────┴─────────┴─────────┴───────────┴───────────┴─────────┘
+    
+    Req/Bytes counts sampled once per second.
+    # of samples: 9
+    
+    419k requests in 11.86s, 273 MB read
+</details>
+<details>
+    <summary> Time verbose results wrapped around localhost running Starlette </summary>
+
+    $ /usr/bin/time -l bench-starlet
+    >            26.05  real
+    >            48.12  user
+    >             7.06  sys
+    >         54853632  maximum resident set size
+    >                0  average shared memory size
+    >                0  average unshared data size
+    >                0  average unshared stack size
+    >            76909  page reclaims
+    >             1578  page faults
+    >                0  swaps
+    >                0  block input operations
+    >                0  block output operations
+    >           839741  messages sent
+    >           421171  messages received
+    >               23  signals received
+    >             1011  voluntary context switches
+    >           537144  involuntary context switches
+    >       2133123038  instructions retired
+    >        905382541  cycles elapsed
+    >         31606016  peak memory footprint
+</details>
+
+### Python Spartan (ASGI specs without framework)
+
+<details>
+    <summary> Autocannon results on localhost running Spartan /api/devices </summary>
 
     Running 10s test @ http://localhost:8080/api/devices
     10000 connections
@@ -275,7 +327,7 @@ Plus, it's fun.
 <details>
     <summary> Time verbose results wrapped around localhost running Spartan </summary>
 
-    $ /usr/bin/time -l bench-uvicorn
+    $ /usr/bin/time -l bench-spartan
     >            25.31  real
     >            60.10  user
     >            10.97  sys
