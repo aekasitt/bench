@@ -92,9 +92,12 @@
   <text
     font-family='Arial'
     font-size='1.2rem'
-    y='12rem'
+    y='11rem'
     >
-    <tspan dy='0' x='16rem'>
+    <tspan dy='0' x='40rem'>
+      /yokwāt/
+    </tspan>
+    <tspan dy='1.6rem' x='16rem'>
       Performance is a feature; And not delivering
     </tspan>
     <tspan dy='1.6rem' x='16rem'>
