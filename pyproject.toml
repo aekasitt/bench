@@ -23,19 +23,19 @@ version = '0.1.0'
 
 
 [project.scripts]
-bench-fastapi = 'bench_fastapi.core:main'
-bench-litestar = 'bench_litestar.core:main'
-bench-starlette = 'bench_starlette.core:main'
-bench-uvicorn = 'bench_uvicorn.core:main'
+bench-fastapi = 'bench.fastapi.core:main'
+bench-litestr = 'bench.litestr.core:main'
+bench-spartan = 'bench.spartan.core:main'
+bench-starlet = 'bench.starlet.core:main'
 press-migrate = 'press.migrate:main'
 
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  'src/bench_fastapi',
-  'src/bench_litestar',
-  'src/bench_starlette',
-  'src/bench_uvicorn',
+  'src/bench/fastapi',
+  'src/bench/litestr',
+  'src/bench/spartan',
+  'src/bench/starlet',
   'src/press',
 ]
 
@@ -47,13 +47,13 @@ dependencies = [
 ]
 enable-by-default = true
 exclude = [
-  '/src/bench_fastapi',
-  '/src/bench_fastify',
-  '/src/bench_litestar',
+  '/src/bench/fastapi',
+  '/src/bench/fastify',
+  '/src/bench/litestr',
+  '/src/bench/spartan/core.py',
+  '/src/bench/starlet',
+  '/src/bench/vanilla',
   '/src/press',
-  '/src/bench_starlette',
-  '/src/bench_vanilla',
-  '/src/bench_uvicorn/core.py',
 ]
 mypy-args = [
   '--disallow-untyped-calls',
@@ -63,11 +63,11 @@ mypy-args = [
 ]
 packages = [ 'src/bench_starlette' ]
 only-include = [
-  '/src/bench_uvicorn/cache.py',
-  '/src/bench_uvicorn/configs.py',
-  '/src/bench_uvicorn/routes.py',
-  '/src/bench_uvicorn/database.py',
-  '/src/bench_uvicorn/metrics.py',
+  '/src/bench/spartan/cache.py',
+  '/src/bench/spartan/configs.py',
+  '/src/bench/spartan/routes.py',
+  '/src/bench/spartan/database.py',
+  '/src/bench/spartan/metrics.py',
 ]
 
 
@@ -81,11 +81,11 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 exclude = [
-  'src/bench_fastapi',
-  'src/bench_fastify',
-  'src/bench_litestar',
-  'src/bench_starlette',
-  'src/bench_vanilla',
+  'src/bench/fastapi',
+  'src/bench/fastify',
+  'src/bench/litestr',
+  'src/bench/starlet',
+  'src/bench/vanilla',
 ]
 strict = true
 

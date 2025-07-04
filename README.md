@@ -7,18 +7,22 @@
 
 [![Bench Banner](./static/bench-banner.svg)](https://github.com/aekasitt/bench/blob/master/static/bench-banner.svg)
 
-## Roster
+## Contenders
 
 * FastAPI (python)
 * Fastify (node) 
 * Litestar (python)
 * Vanilla (node)
-* Plain ASGI on Uvicorn (python)
+* Starlette (python)
+* ASGI spec, henceforth called "Spartan" (python)
 
 This repository uses [autocannon](https://npmjs.com/package/autocannon) for basic and
 non-reproduceable-on-production test for a web server implemented by [FastAPI](https://fastapi.tiangolo.com),
 [Fastify](https://fastify.dev), [Litestar](https://litestar.dev), simple vanilla implementation
-of a web server on [Node.js](https://nodejs.org) and a simple plain ASGI implementation on [Uvicorn](https://uvicorn.org) webserver.
+of a web server on [Node.js](https://nodejs.org), a minimalistic [Starlette](starlette.io) applet
+and finally a simple plain ASGI application according to
+[Asynchronous Server Gateway Interface specs](https://asgi.readthedocs.io/en/latest/specs/main.html)
+henceforth called the Spartan implementation.
 
 ## Why work on something if it does not reproduce on production?
 
@@ -245,7 +249,7 @@ Plus, it's fun.
 ### Python uvicorn with compiled endpoints
 
 <details>
-  <summary> Autocannon results on localhost running uvicorn with mypycified /api/devices </summary>
+  <summary> Autocannon results on localhost running Spartan /api/devices </summary>
 
     Running 10s test @ http://localhost:8080/api/devices
     10000 connections
@@ -269,7 +273,7 @@ Plus, it's fun.
     348k requests in 12.32s, 244 MB read
 </details>
 <details>
-    <summary> Time verbose results wrapped around localhost running uvicorn </summary>
+    <summary> Time verbose results wrapped around localhost running Spartan </summary>
 
     $ /usr/bin/time -l bench-uvicorn
     >            25.31  real

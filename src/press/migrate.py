@@ -22,9 +22,10 @@ async def create_database() -> None:
     table_drops: tuple[str, ...] = (
       "DROP TABLE IF EXISTS fastapi_device;",
       "DROP TABLE IF EXISTS fastify_device;",
-      "DROP TABLE IF EXISTS litestar_device;",
+      "DROP TABLE IF EXISTS litestr_device;",
+      "DROP TABLE IF EXISTS spartan_device;",
+      "DROP TABLE IF EXISTS starlet_device;",
       "DROP TABLE IF EXISTS vanilla_device;",
-      "DROP TABLE IF EXISTS uvicorn_device;",
     )
     for drop in map(connection.execute, table_drops):
       result: str = await drop
@@ -51,7 +52,27 @@ async def create_database() -> None:
        );
        """,
        """
-       CREATE TABLE IF NOT EXISTS litestar_device (
+       CREATE TABLE IF NOT EXISTS litestr_device (
+         id SERIAL PRIMARY KEY,
+         uuid UUID DEFAULT NULL,
+         mac VARCHAR(255) DEFAULT NULL,
+         firmware VARCHAR(255) DEFAULT NULL,
+         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+       );
+       """,
+       """
+       CREATE TABLE IF NOT EXISTS spartan_device (
+         id SERIAL PRIMARY KEY,
+         uuid UUID DEFAULT NULL,
+         mac VARCHAR(255) DEFAULT NULL,
+         firmware VARCHAR(255) DEFAULT NULL,
+         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+       );
+       """,
+       """
+       CREATE TABLE IF NOT EXISTS starlet_device (
          id SERIAL PRIMARY KEY,
          uuid UUID DEFAULT NULL,
          mac VARCHAR(255) DEFAULT NULL,
@@ -62,16 +83,6 @@ async def create_database() -> None:
        """,
        """
        CREATE TABLE IF NOT EXISTS vanilla_device (
-         id SERIAL PRIMARY KEY,
-         uuid UUID DEFAULT NULL,
-         mac VARCHAR(255) DEFAULT NULL,
-         firmware VARCHAR(255) DEFAULT NULL,
-         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-       );
-       """,
-       """
-       CREATE TABLE IF NOT EXISTS uvicorn_device (
          id SERIAL PRIMARY KEY,
          uuid UUID DEFAULT NULL,
          mac VARCHAR(255) DEFAULT NULL,
