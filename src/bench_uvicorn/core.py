@@ -32,10 +32,16 @@ async def app(scope: HTTPScope, receive: ASGIReceiveCallable, send: ASGISendCall
 
 
 def main() -> None:
-  from multiprocessing import cpu_count
+  from psutil import cpu_count
   from uvicorn import run
 
-  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=cpu_count())
+  physical_cores: int = cpu_count(logical=False)
+  logical_cores: int = cpu_count(logical=True)
+  threads_per_core: int = logical_cores // physical_cores
+  workers: int = physical_cores * threads_per_core + 1
+  print(f"Sentry recommended workers: { workers }")
+
+  run("bench_uvicorn.core:app", log_level="error", port=8080, workers=workers)
 
 
 if __name__ == "__main__":
