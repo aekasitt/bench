@@ -16,7 +16,7 @@ from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
 from socket import gaierror as SocketError
 from time import perf_counter
-from typing import Any
+from typing import Any, Final
 from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
@@ -39,8 +39,8 @@ class Device:
 
   @classmethod
   def from_bytes(cls, data: bytes) -> "Device":
-    str_repr: str = data.decode("utf-8")
-    dict_repr: dict[str, Any] = loads(str_repr)
+    str_repr: Final[str] = data.decode("utf-8")
+    dict_repr: Final[dict[str, str]] = loads(str_repr)
     return Device(**dict_repr)
 
 
@@ -57,20 +57,20 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
     body += message.get("body", b"")
     more_body = message.get("more_body", False)
   try:
-    device: Device = Device.from_bytes(body)
-    now = datetime.now(timezone.utc)
-    device_uuid: UUID = uuid()
-    insert_query = """
+    device: Final[Device] = Device.from_bytes(body)
+    now: Final[datetime] = datetime.now(timezone.utc)
+    device_uuid: Final[UUID] = uuid()
+    insert_query: Final[str] = """
             INSERT INTO uvicorn_device (uuid, mac, firmware, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id;
             """
-    start_time: float = perf_counter()
+    start_time_pg: Final[float] = perf_counter()
     async with Postgres() as postgres:
       row = await postgres.connection.fetchrow(
         insert_query, device_uuid, device.mac, device.firmware, now, now
       )
-      H_POSTGRES_LABEL.observe(perf_counter() - start_time)
+      H_POSTGRES_LABEL.observe(perf_counter() - start_time_pg)
       if not row:
         await send(
           {
@@ -86,7 +86,7 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
           }
         )
         return
-    device_dict = {
+    device_dict: Final[dict[str, str]] = {
       "id": row["id"],
       "uuid": str(device_uuid),
       "mac": device.mac,
@@ -95,14 +95,14 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
       "updated_at": now.isoformat(),
     }
     # Measure cache operation
-    start_time = perf_counter()
+    start_time_mc: Final[float] = perf_counter()
     with Memcached() as memcached:
       memcached.client.set(
         device_uuid.hex.encode(),
         dumps(device_dict),
         time=20,
       )
-    H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
+    H_MEMCACHED_LABEL.observe(perf_counter() - start_time_mc)
     await send(
       {
         "type": "http.response.start",
@@ -179,7 +179,7 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
 
 async def get_devices(scope: Any, receive: Any, send: Any) -> None:
   """Get static list of devices"""
-  devices: tuple[dict[str, int | str], ...] = (
+  devices: Final[tuple[dict[str, int | str], ...]] = (
     {
       "id": 1,
       "uuid": "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
@@ -227,7 +227,7 @@ async def get_device_stats(
 ) -> None:
   try:
     stats: list[tuple[bytes, dict[bytes, Any]]]
-    stats_data: dict[str, str] = {}
+    stats_data: Final[dict[str, str]] = {}
     with Memcached() as memcached:
       stats = memcached.client.get_stats()
     _, result = stats[0]
@@ -299,4 +299,4 @@ async def health(scope: Any, receive: Any, send: Any) -> None:
   )
 
 
-__all__: tuple[str, ...] = ("health", "get_devices")
+__all__: Final[tuple[str, ...]] = ("health", "get_devices")

@@ -9,11 +9,14 @@
 # HISTORY:
 # *************************************************************
 
+### Standard packages ###
+from typing import Final
+
 ### Third-party packages ###
 from prometheus_client import Histogram
 
 # exactly the same histogram buckets as in Go.
-buckets: tuple[float, ...] = (
+buckets: Final[tuple[float, ...]] = (
   0.00001,
   0.000015,
   0.00002,
@@ -277,7 +280,7 @@ buckets: tuple[float, ...] = (
   5.0,
 )
 
-H = Histogram(
+H: Final[Histogram] = Histogram(
   "myapp_request_duration_seconds",
   "Duration of the request",
   labelnames=("op", "db"),
@@ -285,4 +288,4 @@ H = Histogram(
 )
 
 
-__all__: tuple[str, ...] = ("H", "buckets")
+__all__: Final[tuple[str, ...]] = ("H", "buckets")

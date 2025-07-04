@@ -11,7 +11,7 @@
 
 ### Standard packages ###
 from types import TracebackType
-from typing import Type
+from typing import Final, Type
 
 ### Third-party packages ###
 from pylibmc.client import Client
@@ -35,4 +35,4 @@ class Memcached:
     self.client.disconnect_all()
 
 
-__all__: tuple[str, ...] = ("Memcached",)
+__all__: Final[tuple[str, ...]] = ("Memcached",)

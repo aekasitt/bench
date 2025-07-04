@@ -11,7 +11,7 @@
 
 ### Standard packages ###
 from types import TracebackType
-from typing import Type
+from typing import Type, Final
 
 ### Third-party packages ###
 from asyncpg import Connection, connect
@@ -34,4 +34,4 @@ class Postgres:
     ...
 
 
-__all__: tuple[str, ...] = ("Postgres",)
+__all__: Final[tuple[str, ...]] = ("Postgres",)

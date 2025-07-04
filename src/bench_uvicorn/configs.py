@@ -11,6 +11,7 @@
 
 ### Standard packages ###
 from os import getenv
+from typing import Final
 
 ### If development environment, load dotenv ###
 try:
@@ -20,13 +21,15 @@ try:
 except ImportError:
   pass
 
-MEMCACHED_HOST: str = getenv("MEMCACHED_HOST", "127.0.0.1")
-MEMCACHED_POOL_SIZE: int = int(getenv("MEMCACHED_POOL_SIZE", "500"))
-POSTGRES_POOL_SIZE: int = int(getenv("POSTGRES_POOL_SIZE", "20"))
-POSTGRES_URI: str = getenv("POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb")
+MEMCACHED_HOST: Final[str] = getenv("MEMCACHED_HOST", "127.0.0.1")
+MEMCACHED_POOL_SIZE: Final[int] = int(getenv("MEMCACHED_POOL_SIZE", "500"))
+POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
+POSTGRES_URI: Final[str] = getenv(
+  "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
+)
 
 
-__all__: tuple[str, ...] = (
+__all__: Final[tuple[str, ...]] = (
   "MEMCACHED_HOST",
   "MEMCACHED_POOL_SIZE",
   "POSTGRES_POOL_SIZE",
