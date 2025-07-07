@@ -11,7 +11,7 @@ from asyncpg import Connection, connect
 from asyncpg.exceptions import PostgresError
 
 ### Local modules ###
-from bench_uvicorn.configs import POSTGRES_URI
+from bench.spartan.configs import POSTGRES_URI
 
 
 async def create_database() -> None:
