@@ -21,7 +21,7 @@ from typing import Any, Final, Type
 from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
-# from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
+from uvicorn._types import ASGIReceiveCallable, ASGIReceiveEvent, ASGISendCallable, Scope
 from asyncpg import Connection, connect
 from asyncpg.exceptions import PostgresError
 from prometheus_client import Histogram
@@ -85,11 +85,11 @@ class Postgres:
     await self.connection.close()
 
 
-async def create_device(scope: Any, receive: Any, send: Any) -> None:
+async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
   body: bytes = b""
   more_body: bool = True
   while more_body:
-    message: dict[str, Any] = await receive()
+    message: ASGIReceiveEvent = await receive()
     assert message["type"] == "http.request"
     body += message.get("body", b"")
     more_body = message.get("more_body", False)
@@ -133,7 +133,6 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
       "created_at": now.isoformat(),  #
       "updated_at": now.isoformat(),
     }
-    # Measure cache operation
     start_time_mc: Final[float] = perf_counter()
     with Memcached() as memcached:
       memcached.client.set(
@@ -218,7 +217,7 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
     )
 
 
-async def get_devices(scope: Any, receive: Any, send: Any) -> None:
+async def get_devices(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
   """Get static list of devices"""
   devices: Final[tuple[dict[str, int | str], ...]] = (
     {
@@ -262,9 +261,7 @@ async def get_devices(scope: Any, receive: Any, send: Any) -> None:
 
 
 async def get_device_stats(
-  scope: Any,
-  receive: Any,
-  send: Any,
+  scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 ) -> None:
   try:
     stats: list[tuple[bytes, dict[bytes, Any]]]
