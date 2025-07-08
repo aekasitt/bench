@@ -41,7 +41,7 @@ def main() -> None:
   threads_per_core: int = logical_cores // physical_cores
   workers: int = physical_cores * threads_per_core + 1
 
-  run("bench.spartan.core:app", log_level="error", port=8080, workers=workers)
+  run("bench.spartan.core:app", log_level="error", port=8080, workers=workers * 2)
 
 
 if __name__ == "__main__":
