@@ -82,8 +82,7 @@ class Postgres:
   async def __aexit__(
     self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
   ) -> None:
-    # del self.connection
-    ...
+    await self.connection.close()
 
 
 async def create_device(scope: Any, receive: Any, send: Any) -> None:
