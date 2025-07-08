@@ -21,6 +21,11 @@ try:
 except ImportError:
   pass
 
+with open("buckets.txt", "r") as file:
+  content: list[str] = file.read().split()
+  BUCKETS: Final[tuple[float, ...]] = tuple(map(float, content))
+
+
 MEMCACHED_HOST: Final[str] = getenv("MEMCACHED_HOST", "127.0.0.1")
 MEMCACHED_POOL_SIZE: Final[int] = int(getenv("MEMCACHED_POOL_SIZE", "500"))
 POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
@@ -30,6 +35,7 @@ POSTGRES_URI: Final[str] = getenv(
 
 
 __all__: Final[tuple[str, ...]] = (
+  "BUCKETS",
   "MEMCACHED_HOST",
   "MEMCACHED_POOL_SIZE",
   "POSTGRES_POOL_SIZE",

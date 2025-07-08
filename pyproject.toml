@@ -63,6 +63,7 @@ exclude = [
   '/src/bench/fastapi',
   '/src/bench/fastify',
   '/src/bench/litestr',
+  '/src/bench/spartan/configs.py',
   '/src/bench/spartan/core.py',
   '/src/bench/starlet',
   '/src/bench/vanilla',
@@ -76,11 +77,7 @@ mypy-args = [
 ]
 packages = [ 'src/bench_starlette' ]
 only-include = [
-  '/src/bench/spartan/cache.py',
-  '/src/bench/spartan/configs.py',
   '/src/bench/spartan/routes.py',
-  '/src/bench/spartan/database.py',
-  '/src/bench/spartan/metrics.py',
 ]
 
 

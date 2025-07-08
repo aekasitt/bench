@@ -16,20 +16,22 @@ from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
 from socket import gaierror as SocketError
 from time import perf_counter
-from typing import Any, Final
+from types import TracebackType
+from typing import Any, Final, Type
 from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
 # from uvicorn._types import HTTPScope, ASGIReceiveCallable, ASGISendCallable
+from asyncpg import Connection, connect
 from asyncpg.exceptions import PostgresError
+from prometheus_client import Histogram
+from pylibmc.client import Client
 
 ### Local modules ###
-from bench.spartan.cache import Memcached
-from bench.spartan.database import Postgres
-from bench.spartan.metrics import H
+from bench.spartan.configs import BUCKETS, MEMCACHED_HOST, POSTGRES_URI
 
 ### Initiate module logger ###
-logger: Logger = getLogger("uvicorn")
+logger: Logger = getLogger(__name__)
 
 
 @dataclass
@@ -44,8 +46,44 @@ class Device:
     return Device(**dict_repr)
 
 
+H: Final[Histogram] = Histogram(
+  "myapp_request_duration_seconds",
+  "Duration of the request",
+  labelnames=("op", "db"),
+  buckets=BUCKETS,
+)
+
 H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
 H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
+
+
+class Memcached:
+  """Get Memcached client instance"""
+
+  client: Client
+
+  def __enter__(self) -> "Memcached":
+    self.client = Client([MEMCACHED_HOST])
+    return self
+
+  def __exit__(
+    self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
+  ) -> None:
+    self.client.disconnect_all()
+
+
+class Postgres:
+  connection: Connection
+
+  async def __aenter__(self) -> "Postgres":
+    self.connection = await connect(POSTGRES_URI)
+    return self
+
+  async def __aexit__(
+    self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
+  ) -> None:
+    # del self.connection
+    ...
 
 
 async def create_device(scope: Any, receive: Any, send: Any) -> None:
@@ -60,32 +98,34 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
     device: Final[Device] = Device.from_bytes(body)
     now: Final[datetime] = datetime.now(timezone.utc)
     device_uuid: Final[UUID] = uuid()
-    insert_query: Final[str] = """
-            INSERT INTO uvicorn_device (uuid, mac, firmware, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id;
-            """
     start_time_pg: Final[float] = perf_counter()
     async with Postgres() as postgres:
-      row = await postgres.connection.fetchrow(
-        insert_query, device_uuid, device.mac, device.firmware, now, now
+      firmware: Final[str] = device.firmware
+      mac: Final[str] = device.mac
+      insert_query: Final[str] = f"""
+        INSERT INTO spartan_device (uuid, mac, firmware, created_at, updated_at)
+        VALUES ('{device_uuid}', '{mac}', '{firmware}', '{now}', '{now}')
+        RETURNING id;
+        """
+      row = await postgres.connection.fetchrow(insert_query)
+    end_time_pg: Final[float] = perf_counter()
+    duration_pg: Final[float] = end_time_pg - start_time_pg
+    H_POSTGRES_LABEL.observe(duration_pg)
+    if not row:
+      await send(
+        {
+          "type": "http.response.start",
+          "status": 500,
+          "headers": [(b"Content-Type", b"text/plain")],
+        }
       )
-      H_POSTGRES_LABEL.observe(perf_counter() - start_time_pg)
-      if not row:
-        await send(
-          {
-            "type": "http.response.start",
-            "status": 500,
-            "headers": [(b"Content-Type", b"text/plain")],
-          }
-        )
-        await send(
-          {
-            "type": "http.response.body",
-            "body": b"Failed to create device record",
-          }
-        )
-        return
+      await send(
+        {
+          "type": "http.response.body",
+          "body": b"Failed to create device record",
+        }
+      )
+      return
     device_dict: Final[dict[str, str]] = {
       "id": row["id"],
       "uuid": str(device_uuid),
@@ -102,7 +142,9 @@ async def create_device(scope: Any, receive: Any, send: Any) -> None:
         dumps(device_dict),
         time=20,
       )
-    H_MEMCACHED_LABEL.observe(perf_counter() - start_time_mc)
+    end_time_mc: Final[float] = perf_counter()
+    duration_mc: Final[float] = end_time_mc - start_time_mc
+    H_MEMCACHED_LABEL.observe(duration_mc)
     await send(
       {
         "type": "http.response.start",
