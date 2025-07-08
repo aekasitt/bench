@@ -19,6 +19,9 @@ from uuid import uuid4 as uuid
 ### Third-party packages ###
 from aiomcache.exceptions import ClientException
 from asyncpg.exceptions import PostgresError
+from litestar.exceptions import HTTPException
+from litestar.response import Response
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from msgspec import Struct
 from orjson import dumps
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -27,9 +30,6 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from bench.litestr.cache import get_memcached
 from bench.litestr.database import get_postgres_connection
 from bench.litestr.metrics import H
-from litestar.exceptions import HTTPException
-from litestar.response import Response
-from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
