@@ -9,8 +9,7 @@ dependencies = [
   'prometheus-client >=0.21.1',
   'psutil >=7.0.0',
   'pylibmc >=1.6.3',
-  'uvicorn >=0.34.0',
-  'uvloop >=0.21.0',
+  'uvicorn[standard] >=0.34.0',
 ]
 description = 'Performance is a feature'
 name = 'bench'
