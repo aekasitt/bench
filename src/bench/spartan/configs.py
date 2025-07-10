@@ -10,6 +10,7 @@
 # *************************************************************
 
 ### Standard packages ###
+from __future__ import annotations
 from os import getenv
 from typing import Final
 

@@ -9,6 +9,9 @@
 # HISTORY:
 # *************************************************************
 
+### Standard packages ###
+from __future__ import annotations
+
 ### Third-party packages ###
 from uvicorn._types import ASGIReceiveCallable, ASGISendCallable, Scope
 
