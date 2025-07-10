@@ -11,6 +11,7 @@
 
 ### Standard packages ###
 from __future__ import annotations
+from fileinput import input
 from os import getenv
 from typing import Final
 
@@ -22,11 +23,7 @@ try:
 except ImportError:
   pass
 
-with open("buckets.txt", "r") as file:
-  content: list[str] = file.read().split()
-  BUCKETS: Final[tuple[float, ...]] = tuple(map(float, content))
-
-
+BUCKETS: Final[tuple[float, ...]] = tuple(map(float, input(("buckets.txt",), encoding="utf-8")))
 MEMCACHED_HOST: Final[str] = getenv("MEMCACHED_HOST", "127.0.0.1")
 MEMCACHED_POOL_SIZE: Final[int] = int(getenv("MEMCACHED_POOL_SIZE", "500"))
 POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
