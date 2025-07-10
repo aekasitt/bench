@@ -13,7 +13,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
 from socket import gaierror as SocketError
 from time import perf_counter
@@ -22,11 +21,12 @@ from typing import Any, Final, Type
 from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
-from uvicorn._types import ASGIReceiveCallable, ASGIReceiveEvent, ASGISendCallable, Scope
+from msgspec.json import decode, encode
 from asyncpg import Connection, connect
 from asyncpg.exceptions import PostgresError
 from prometheus_client import Histogram
 from pylibmc.client import Client
+from uvicorn._types import ASGIReceiveCallable, ASGIReceiveEvent, ASGISendCallable, Scope
 
 ### Local modules ###
 from bench.spartan.configs import BUCKETS, MEMCACHED_HOST, POSTGRES_URI
@@ -43,7 +43,7 @@ class Device:
   @classmethod
   def from_bytes(cls, data: bytes) -> "Device":
     str_repr: Final[str] = data.decode("utf-8")
-    dict_repr: Final[dict[str, str]] = loads(str_repr)
+    dict_repr: Final[dict[str, str]] = decode(str_repr, type=dict[str, str])
     return Device(**dict_repr)
 
 
@@ -138,7 +138,7 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
     with Memcached() as memcached:
       memcached.client.set(
         device_uuid.hex.encode(),
-        dumps(device_dict),
+        encode(device_dict).decode("utf-8"),
         time=20,
       )
     end_time_mc: Final[float] = perf_counter()
@@ -154,21 +154,7 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
     await send(
       {
         "type": "http.response.body",
-        "body": dumps(device_dict).encode("utf-8"),
-      }
-    )
-  except JSONDecodeError:
-    await send(
-      {
-        "type": "http.response.start",
-        "status": 400,
-        "headers": [(b"Content-Type", b"text/plain")],
-      }
-    )
-    await send(
-      {
-        "type": "http.response.body",
-        "body": b"Invalid payload",
+        "body": encode(device_dict),
       }
     )
   except PostgresError:
@@ -184,6 +170,20 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
       {
         "type": "http.response.body",
         "body": b"Database error occurred while creating device",
+      }
+    )
+  except TypeError:
+    await send(
+      {
+        "type": "http.response.start",
+        "status": 400,
+        "headers": [(b"Content-Type", b"text/plain")],
+      }
+    )
+    await send(
+      {
+        "type": "http.response.body",
+        "body": b"Invalid payload",
       }
     )
   except (SocketError, ValueError):
@@ -256,7 +256,7 @@ async def get_devices(scope: Scope, receive: ASGIReceiveCallable, send: ASGISend
   await send(
     {
       "type": "http.response.body",
-      "body": dumps(devices).encode("utf-8"),
+      "body": encode(devices),
     }
   )
 
@@ -286,7 +286,7 @@ async def get_device_stats(
     await send(
       {
         "type": "http.response.body",
-        "body": dumps(stats_data).encode("utf-8"),
+        "body": encode(stats_data),
       }
     )
   except (SocketError, ValueError) as e:
