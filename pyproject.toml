@@ -57,7 +57,7 @@ packages = [
 [tool.hatch.build.targets.wheel.hooks.mypyc]
 dependencies = [
   'hatch-mypyc >=0.16.0',
-  'mypy >=1.15.0',
+  'mypy >=1.16.1',
 ]
 enable-by-default = true
 exclude = [
@@ -112,7 +112,7 @@ target-version = 'py312'
 
 [tool.uv]
 dev-dependencies = [
-  'mypy >=1.15.0',
+  'mypy >=1.16.1',
   'python-dotenv >=1.0.1',
   'ruff >=0.9.2',
 ]
