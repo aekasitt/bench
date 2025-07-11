@@ -14,7 +14,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fileinput import input
-from logging import Logger, getLogger
 from os import getenv
 from socket import gaierror as SocketError
 from time import perf_counter
@@ -45,9 +44,6 @@ POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
 POSTGRES_URI: Final[str] = getenv(
   "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
 )
-
-### Initiate module logger ###
-logger: Logger = getLogger(__name__)
 
 
 @dataclass
@@ -173,7 +169,6 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
       }
     )
   except PostgresError:
-    logger.exception("Postgres error")
     await send(
       {
         "type": "http.response.start",
@@ -202,7 +197,6 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
       }
     )
   except (SocketError, ValueError):
-    logger.exception("Memcached error")
     await send(
       {
         "type": "http.response.start",
@@ -217,7 +211,6 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
       }
     )
   except Exception:
-    logger.exception("Unknown error")
     await send(
       {
         "type": "http.response.start",
@@ -304,8 +297,7 @@ async def get_device_stats(
         "body": encode(stats_data),
       }
     )
-  except (SocketError, ValueError) as e:
-    logger.exception(f"Memcached error: {e}")
+  except (SocketError, ValueError):
     await send(
       {
         "type": "http.response.start",
@@ -319,8 +311,7 @@ async def get_device_stats(
         "body": b"Memcached error occurred while retrieving stats",
       }
     )
-  except Exception as e:
-    logger.exception(f"Unknown error: {e}")
+  except Exception:
     await send(
       {
         "type": "http.response.start",
