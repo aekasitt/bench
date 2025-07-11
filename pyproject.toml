@@ -64,7 +64,6 @@ exclude = [
   '/src/bench/fastapi',
   '/src/bench/fastify',
   '/src/bench/litestr',
-  '/src/bench/spartan/configs.py',
   '/src/bench/spartan/core.py',
   '/src/bench/starlet',
   '/src/bench/vanilla',

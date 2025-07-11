@@ -4,14 +4,19 @@ Migration script for databases used in tests
 """
 
 ### Standard packages ###
+from __future__ import annotations
 from asyncio import AbstractEventLoop, get_event_loop
+from os import getenv
+from typing import Final
 
 ### Third-party packages ###
 from asyncpg import Connection, connect
 from asyncpg.exceptions import PostgresError
 
-### Local modules ###
-from bench.spartan.configs import POSTGRES_URI
+
+POSTGRES_URI: Final[str] = getenv(
+  "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
+)
 
 
 async def create_database() -> None:
@@ -108,4 +113,4 @@ if __name__ == "__main__":
   main()
 
 
-__all__: tuple[str, ...] = ("create_database",)
+__all__: Final[tuple[str, ...]] = ("create_database",)

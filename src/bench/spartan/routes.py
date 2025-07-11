@@ -13,7 +13,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from fileinput import input
 from logging import Logger, getLogger
+from os import getenv
 from socket import gaierror as SocketError
 from time import perf_counter
 from types import TracebackType
@@ -28,8 +30,21 @@ from prometheus_client import Histogram
 from pylibmc.client import Client
 from uvicorn._types import ASGIReceiveCallable, ASGIReceiveEvent, ASGISendCallable, Scope
 
-### Local modules ###
-from bench.spartan.configs import BUCKETS, MEMCACHED_HOST, POSTGRES_URI
+### If development environment, load dotenv ###
+try:
+  from dotenv import load_dotenv
+
+  load_dotenv(".env")
+except ImportError:
+  pass
+
+BUCKETS: Final[tuple[float, ...]] = tuple(map(float, input(("buckets.txt",), encoding="utf-8")))
+MEMCACHED_HOST: Final[str] = getenv("MEMCACHED_HOST", "127.0.0.1")
+MEMCACHED_POOL_SIZE: Final[int] = int(getenv("MEMCACHED_POOL_SIZE", "500"))
+POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
+POSTGRES_URI: Final[str] = getenv(
+  "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
+)
 
 ### Initiate module logger ###
 logger: Logger = getLogger(__name__)
