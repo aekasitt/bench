@@ -21,6 +21,11 @@ from bench.spartan.routes import create_device, get_devices, get_device_stats, h
 
 async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
   assert scope["type"] == "http"
+
+  # NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
+  from gc import set_threshold
+  set_threshold(150_000)
+
   path: str = scope["path"]
   method: str = scope["method"]
 
