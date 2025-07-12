@@ -142,7 +142,7 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
       "uuid": str(device_uuid),
       "mac": device.mac,
       "firmware": device.firmware,
-      "created_at": now.isoformat(),  #
+      "created_at": now.isoformat(),
       "updated_at": now.isoformat(),
     }
     start_time_mc: Final[float] = perf_counter()
