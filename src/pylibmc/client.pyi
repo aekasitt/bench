@@ -33,7 +33,7 @@ class Client:
     """Disconnect from all servers and reset state."""
 
   def get(self, key: Key) -> None | bytes:
-    """TODO"""
+    """Retrieve a key from a memcached."""
 
   def get_multi(keys: Sequence[Key], key_prefix: None | Key = None) -> Sequence[Any]:
     """Get multiple keys at once."""
