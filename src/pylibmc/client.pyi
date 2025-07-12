@@ -3,7 +3,9 @@
 Type stubs for pymemcache base Client
 """
 
-from typing import Any, Final
+### Standard packages ###
+from __future__ import annotations
+from typing import Any, Final, Mapping, Sequence
 
 Key = bytes | str
 
@@ -17,13 +19,15 @@ class Client:
     username: None | str = None,
     password: None | str = None,
   ) -> None:
-    """TODO"""
+    """Initialize a memcached client instance."""
 
   def clone(self) -> None:
-    """TODO"""
+    """Clone this client entirely such that it is safe to access from
+    another thread. This creates a new connection.
+    """
 
-  def delete(self, key: bytes) -> bool:
-    """TODO"""
+  def delete(self, key: Key) -> bool:
+    """Delete a key."""
 
   def disconnect_all(self) -> None:
     """Disconnect from all servers and reset state."""
@@ -31,16 +35,24 @@ class Client:
   def get(self, key: Key) -> None | bytes:
     """TODO"""
 
-  def get_behaviors(self) -> dict[str, int]:
-    """TODO"""
+  def get_multi(keys: Sequence[Key], key_prefix: None | Key = None) -> Sequence[Any]:
+    """Get multiple keys at once."""
 
   def get_stats(self) -> list[tuple[bytes, dict[bytes, Any]]]:
-    """TODO"""
+    """Retrieve statistics from all memcached servers"""
 
   def set(
     self, key: Key, value: str, time: int = 0, min_compress_len: int = 0, compress_level: int = -1
   ) -> bool:
-    """TODO"""
+    """Set a key unconditionally."""
+
+  def set_multi(
+    keys: Mapping[Key, Any], time: int = 0, min_compress_len: int = 0, compress_level: int = -1
+  ) -> list[Key]:
+    """Set multiple keys at once."""
+
+  def touch(self, key: Key, ttl: int = 0) -> None:
+    """Change the TTL of a key."""
 
 
 __all__: Final[tuple[str, ...]] = ("Client",)
