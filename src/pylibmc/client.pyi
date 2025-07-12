@@ -35,7 +35,7 @@ class Client:
   def get(self, key: Key) -> None | bytes:
     """Retrieve a key from a memcached."""
 
-  def get_multi(keys: Sequence[Key], key_prefix: None | Key = None) -> Sequence[Any]:
+  def get_multi(self, keys: Sequence[Key], key_prefix: None | Key = None) -> Sequence[Any]:
     """Get multiple keys at once."""
 
   def get_stats(self) -> list[tuple[bytes, dict[bytes, Any]]]:
@@ -47,7 +47,11 @@ class Client:
     """Set a key unconditionally."""
 
   def set_multi(
-    keys: Mapping[Key, Any], time: int = 0, min_compress_len: int = 0, compress_level: int = -1
+    self,
+    keys: Mapping[Key, Any],
+    time: int = 0,
+    min_compress_len: int = 0,
+    compress_level: int = -1,
   ) -> list[Key]:
     """Set multiple keys at once."""
 
