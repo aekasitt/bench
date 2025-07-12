@@ -10,30 +10,41 @@
 # *************************************************************
 
 ### Standard packages ###
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from logging import Logger, getLogger
 from socket import gaierror as SocketError
 from time import perf_counter
+from typing import Any, Annotated, Final
 from uuid import uuid4 as uuid
 
 ### Third-party packages ###
-from aiomcache.exceptions import ClientException
 from asyncpg import PostgresError
 from fastapi import FastAPI, HTTPException
+from fastapi.param_functions import Depends
 from fastapi.responses import ORJSONResponse, PlainTextResponse
 from orjson import dumps
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
+from pylibmc import Error as MemcachedError
 
 ### Local modules ###
-from bench.fastapi.cache import Memcached
+from bench.fastapi.cache import Memcached, MemcachedPool
 from bench.fastapi.database import Postgres
 from bench.fastapi.metrics import H
 
 ### Initiate module logger ###
-logger: Logger = getLogger(__name__)
+logger: Logger = getLogger("uvicorn")
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> None:
+  MemcachedPool.init()
+  yield
+  MemcachedPool.close()
+
+
+app = FastAPI(lifespan=lifespan)
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
@@ -85,7 +96,9 @@ H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
 
 @app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
-async def create_device(device: DeviceRequest, postgres: Postgres, memcached: Memcached):
+async def create_device(
+  device: DeviceRequest, postgres: Postgres, memcached: Annotated[Memcached, Depends(Memcached)]
+) -> dict[str, str]:
   try:
     now = datetime.now(timezone.utc)
     device_uuid = uuid()
@@ -131,14 +144,14 @@ async def create_device(device: DeviceRequest, postgres: Postgres, memcached: Me
     logger.exception("Postgres error")
     raise HTTPException(status_code=500, detail="Database error occurred while creating device")
 
-  except (ClientException, SocketError):
+  except (MemcachedError, SocketError):
     logger.exception("Memcached error")
     raise HTTPException(
       status_code=500,
-      detail=" Memcached Database error occurred while creating device",
+      detail="Memcached Database error occurred while creating device",
     )
 
-  except Exception as err:
+  except Exception:
     logger.exception("Unknown error")
     raise HTTPException(
       status_code=500, detail="An unexpected error occurred while creating device"
@@ -146,18 +159,21 @@ async def create_device(device: DeviceRequest, postgres: Postgres, memcached: Me
 
 
 @app.get("/api/devices/stats", response_class=ORJSONResponse)
-async def get_device_stats(memcached: Memcached):
+async def get_device_stats(memcached: Annotated[Memcached, Depends(Memcached)]) -> dict[str, int]:
   try:
-    stats = await memcached.stats()
-    return {
-      "curr_items": stats.get(b"curr_items", 0),
-      "total_items": stats.get(b"total_items", 0),
-      "bytes": stats.get(b"bytes", 0),
-      "curr_connections": stats.get(b"curr_connections", 0),
-      "get_hits": stats.get(b"get_hits", 0),
-      "get_misses": stats.get(b"get_misses", 0),
-    }
-  except (ClientException, SocketError):
+    stats: list[tuple[bytes, dict[bytes, Any]]]
+    stats_data: dict[str, str] = {}
+    with memcached.reserve() as client:
+      stats = client.get_stats()
+    _, result = stats[0]
+    stats_data["bytes"] = str(result.get(b"bytes", 0))
+    stats_data["curr_connections"] = result.get(b"curr_connections", 0)
+    stats_data["curr_items"] = result.get(b"curr_items", 0)
+    stats_data["get_hits"] = result.get(b"get_hits", 0)
+    stats_data["get_misses"] = result.get(b"get_misses", 0)
+    stats_data["total_items"] = result.get(b"total_items", 0)
+    return stats_data
+  except (MemcachedError, SocketError):
     logger.exception("Memcached error")
     raise HTTPException(status_code=500, detail="Memcached error occurred while retrieving stats")
   except Exception:
@@ -169,12 +185,19 @@ async def get_device_stats(memcached: Memcached):
 
 
 def main() -> None:
+  from psutil import cpu_count
   from uvicorn import run
 
-  run("bench.fastapi.core:app", port=8080, workers=64)
+  # NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
+  physical_cores: int = cpu_count(logical=False) or 1
+  logical_cores: int = cpu_count(logical=True) or 1
+  threads_per_core: int = logical_cores // physical_cores
+  workers: int = physical_cores * threads_per_core + 1
+
+  run("bench.fastapi.core:app", log_level="error", port=8080, workers=workers)
 
 
 if __name__ == "__main__":
   main()
 
-__all__ = ("app", "main")
+__all__: Final[tuple[str, ...]] = ("app", "main")

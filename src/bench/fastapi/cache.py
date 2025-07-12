@@ -10,36 +10,51 @@
 # *************************************************************
 
 ### Standard packages ###
+from contextlib import contextmanager
 from logging import Logger, getLogger
-from typing import Annotated, AsyncGenerator
+from queue import Empty
+from typing import Final, Generator
 
 ### Third-party packages ###
-from aiomcache import Client
-from aiomcache.exceptions import ClientException
-from fastapi.exceptions import HTTPException
-from fastapi.param_functions import Depends
+from pylibmc.client import Client
+from pylibmc.pools import ClientPool
+from starlette.requests import Request
+from starlette.responses import Response
 
 ### Local modules ###
 from bench.fastapi.configs import MEMCACHED_HOST, MEMCACHED_POOL_SIZE
 
-### Initiate module logger ###
 logger: Logger = getLogger(__name__)
 
 
-async def get_memcached() -> AsyncGenerator[Client, None]:
-  """Dependency for getting Memcached client"""
-  client: Client | None = None
-  try:
-    client = Client(host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE)
-    logger.info("Memcached pool created successfully")
-    yield client
-  except ClientException as e:
-    raise HTTPException(status_code=503, detail=f"Memcached error: {e}")
-  finally:
-    if client is not None:
-      await client.close()
+class MemcachedPool:
+  pool: ClientPool | None = None
+
+  @classmethod
+  def init(cls) -> None:
+    client: Client = Client(servers=[MEMCACHED_HOST])
+    cls.pool = ClientPool(client, n_slots=MEMCACHED_POOL_SIZE)
+
+  @classmethod
+  def close(cls) -> None:
+    while not cls.pool.empty():
+      try:
+        cls.pool.get_nowait()
+      except Empty:
+        break
 
 
-Memcached = Annotated[Client, Depends(get_memcached)]
+class Memcached:
+  def __call__(self, request: Request, response: Response) -> "Memcached":
+    if MemcachedPool.pool is None:
+      logger.exception("Please initiate MemcachedPool instance during FastAPI lifespan")
+    return self
 
-__all__ = ("Memcached", "get_memcached")
+  @contextmanager
+  def reserve(self) -> Generator[Client, None, None]:
+    with MemcachedPool.pool.reserve() as client:
+      yield client
+      client.disconnect_all()
+
+
+__all__: Final[tuple[str, ...]] = ("Memcached", "MemcachedPool")
