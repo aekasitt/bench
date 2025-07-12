@@ -24,6 +24,7 @@ async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 
   # NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
   from gc import set_threshold
+
   set_threshold(150_000)
 
   path: str = scope["path"]
