@@ -130,7 +130,7 @@ async def create_device(
       "uuid": str(device_uuid),
       "mac": device.mac,
       "firmware": device.firmware,
-      "created_at": now,  #
+      "created_at": now,
       "updated_at": now,
     }
     start_time = perf_counter()
