@@ -14,7 +14,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fileinput import input
-from logging import Logger, getLogger
 from os import getenv
 from socket import gaierror as SocketError
 from time import perf_counter
@@ -47,7 +46,6 @@ POSTGRES_URI: Final[str] = getenv(
   "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
 )
 
-logger: Logger = getLogger("uvicorn")
 
 
 @dataclass
@@ -281,8 +279,6 @@ async def get_device_stats(
     stats: list[tuple[bytes, dict[bytes, Any]]]
     stats_data: Final[dict[str, str]] = {}
     with Memcached.pool.reserve() as client:
-      logger.info(client)
-      logger.info(type(client))
       stats = client.get_stats()
     _, result = stats[0]
     stats_data["bytes"] = str(result.get(b"bytes", 0))
@@ -304,8 +300,7 @@ async def get_device_stats(
         "body": encode(stats_data),
       }
     )
-  except (SocketError, ValueError) as err:
-    logger.exception(err)
+  except (SocketError, ValueError):
     await send(
       {
         "type": "http.response.start",
@@ -319,8 +314,7 @@ async def get_device_stats(
         "body": b"Memcached error occurred while retrieving stats",
       }
     )
-  except Exception as err:
-    logger.exception(err)
+  except Exception:
     await send(
       {
         "type": "http.response.start",

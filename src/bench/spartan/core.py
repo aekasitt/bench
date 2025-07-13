@@ -53,7 +53,7 @@ async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 def main() -> None:
   from uvicorn import run
 
-  run("bench.spartan.core:app", lifespan="on", port=8080, workers=workers)
+  run("bench.spartan.core:app", lifespan="on", log_level="error", port=8080, workers=workers)
 
 
 if __name__ == "__main__":
