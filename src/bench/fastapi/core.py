@@ -120,14 +120,14 @@ async def create_device(
     """
     start_time: float = perf_counter()
     async with postgres.acquire() as connection:
-      row = await connection.fetchrow(
+      row_id: int = await connection.fetchval(
         insert_query, device_uuid, device.mac, device.firmware, now, now
       )
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
-    if not row:
+    if not row_id:
       raise HTTPException(status_code=500, detail="Failed to create device record")
     result: dict[str, datetime | str] = {
-      "id": row["id"],
+      "id": row_id,
       "uuid": str(device_uuid),
       "mac": device.mac,
       "firmware": device.firmware,
