@@ -16,7 +16,7 @@ from logging import Logger, getLogger
 from socket import gaierror as SocketError
 from time import perf_counter
 from typing import Any, Annotated, Final
-from uuid import uuid4 as uuid
+from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
 from asyncpg import PostgresError
@@ -104,28 +104,22 @@ async def create_device(
   memcached: Annotated[Memcached, Depends(Memcached)],
 ) -> dict[str, datetime | str]:
   try:
-    now = datetime.now(timezone.utc)
-    device_uuid = uuid()
-
-    insert_query = """
+    now: datetime = datetime.now(timezone.utc)
+    device_uuid: UUID = uuid()
+    insert_query: str = """
       INSERT INTO fastapi_device (uuid, mac, firmware, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id;
     """
-
     start_time: float = perf_counter()
-
     async with postgres.acquire() as connection:
       row = await connection.fetchrow(
         insert_query, device_uuid, device.mac, device.firmware, now, now
       )
-
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
-
     if not row:
       raise HTTPException(status_code=500, detail="Failed to create device record")
-
-    result = {
+    result: dict[str, datetime | str] = {
       "id": row["id"],
       "uuid": str(device_uuid),
       "mac": device.mac,
@@ -136,24 +130,19 @@ async def create_device(
     start_time = perf_counter()
     with memcached.reserve() as client:
       client.set(
-        device_uuid.hex.encode("utf-8"),
-        dumps(result),
-        time=20,
+        device_uuid.hex.encode("utf-8"), dumps(result), time=20,
       )
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
     return result
-
   except PostgresError:
     logger.exception("Postgres error")
     raise HTTPException(status_code=500, detail="Database error occurred while creating device")
-
   except (MemcachedError, SocketError):
     logger.exception("Memcached error")
     raise HTTPException(
       status_code=500,
       detail="Memcached Database error occurred while creating device",
     )
-
   except Exception:
     logger.exception("Unknown error")
     raise HTTPException(
