@@ -25,6 +25,7 @@ from fastapi.param_functions import Depends
 from fastapi.responses import ORJSONResponse, PlainTextResponse
 from orjson import dumps
 from prometheus_client import make_asgi_app
+from psutil import cpu_count
 from pydantic import BaseModel
 from pylibmc import Error as MemcachedError
 
@@ -36,11 +37,17 @@ from bench.fastapi.metrics import H
 ### Initiate module logger ###
 logger: Logger = getLogger("uvicorn")
 
+# NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
+physical_cores: int = cpu_count(logical=False) or 1
+logical_cores: int = cpu_count(logical=True) or 1
+threads_per_core: int = logical_cores // physical_cores
+workers: int = physical_cores * threads_per_core + 1
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> None:
   MemcachedPool.init()
-  await PostgresPool.init()
+  await PostgresPool.init(workers=workers)
   yield
   MemcachedPool.close()
   await PostgresPool.close()
@@ -177,14 +184,7 @@ async def get_device_stats(memcached: Annotated[Memcached, Depends(Memcached)]) 
 
 
 def main() -> None:
-  from psutil import cpu_count
   from uvicorn import run
-
-  # NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
-  physical_cores: int = cpu_count(logical=False) or 1
-  logical_cores: int = cpu_count(logical=True) or 1
-  threads_per_core: int = logical_cores // physical_cores
-  workers: int = physical_cores * threads_per_core + 1
 
   run("bench.fastapi.core:app", log_level="error", port=8080, workers=workers)
 

@@ -30,14 +30,17 @@ logger: Logger = getLogger("uvicorn")
 class PostgresPool:
   pool: Pool
 
+  def __init__(self) -> None:
+    raise NotImplementedError("PostgresPool can only be initiated with init method")
+
   @classmethod
-  async def init(cls) -> None:
+  async def init(cls, workers: int = 1) -> None:
     try:
       cls.pool = await create_pool(
         POSTGRES_URI,
         max_inactive_connection_lifetime=5,
-        max_size=POSTGRES_POOL_SIZE,
-        min_size=10,
+        max_size=POSTGRES_POOL_SIZE // workers,
+        min_size=1,
       )
     except PostgresError as e:
       logger.error(f"Error creating PostgreSQL connection pool: {e}")
