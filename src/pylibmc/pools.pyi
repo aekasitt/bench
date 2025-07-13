@@ -5,6 +5,7 @@ Type stubs for pylibmc.pools package
 
 ### Standard packages ###
 from __future__ import annotations
+from contextlib import contextmanager
 from typing import Final, Generator
 
 ### Local modules ###
@@ -17,6 +18,7 @@ class ClientPool:
   def __init__(self, mc: Client | None = None, n_slots: int = 0) -> None:
     ...
 
+  @contextmanager
   def reserve(self, block: bool = False) -> Generator[Client, None]:
     """Context manager for reserving a client from the pool.
 
