@@ -30,7 +30,7 @@ from pylibmc import Error as MemcachedError
 
 ### Local modules ###
 from bench.fastapi.cache import Memcached, MemcachedPool
-from bench.fastapi.database import Postgres
+from bench.fastapi.database import Postgres, PostgresPool
 from bench.fastapi.metrics import H
 
 ### Initiate module logger ###
@@ -40,8 +40,10 @@ logger: Logger = getLogger("uvicorn")
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> None:
   MemcachedPool.init()
+  await PostgresPool.init()
   yield
   MemcachedPool.close()
+  await PostgresPool.close()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -97,8 +99,10 @@ H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
 @app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
 async def create_device(
-  device: DeviceRequest, postgres: Postgres, memcached: Annotated[Memcached, Depends(Memcached)]
-) -> dict[str, str]:
+  device: DeviceRequest,
+  postgres: Annotated[Postgres, Depends(Postgres)],
+  memcached: Annotated[Memcached, Depends(Memcached)],
+) -> dict[str, datetime | str]:
   try:
     now = datetime.now(timezone.utc)
     device_uuid = uuid()
@@ -111,7 +115,10 @@ async def create_device(
 
     start_time: float = perf_counter()
 
-    row = await postgres.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
+    async with postgres.acquire() as connection:
+      row = await connection.fetchrow(
+        insert_query, device_uuid, device.mac, device.firmware, now, now
+      )
 
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
 
@@ -126,18 +133,14 @@ async def create_device(
       "created_at": now,  #
       "updated_at": now,
     }
-
-    # Measure cache operation
     start_time = perf_counter()
-
-    await memcached.set(
-      device_uuid.hex.encode(),
-      dumps(device_dict),
-      exptime=20,
-    )
-
+    with memcached.reserve() as client:
+      client.set(
+        device_uuid.hex.encode(),
+        dumps(device_dict),
+        time=20,
+      )
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
-
     return device_dict
 
   except PostgresError:

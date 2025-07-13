@@ -12,41 +12,53 @@
 ### Standard packages ###
 from contextlib import asynccontextmanager
 from logging import Logger, getLogger
-from typing import Annotated, AsyncGenerator
+from typing import AsyncGenerator, Final
 
 ### Third-party packages ###
 from asyncpg import Connection, Pool, create_pool
 from asyncpg.exceptions import PostgresError
-from fastapi.param_functions import Depends
+from starlette.requests import Request
+from starlette.responses import Response
 
 ### Local modules ###
 from bench.fastapi.configs import POSTGRES_POOL_SIZE, POSTGRES_URI
 
 ### Initiate module logger ###
-logger: Logger = getLogger(__name__)
+logger: Logger = getLogger("uvicorn")
 
 
-@asynccontextmanager
-async def get_database() -> AsyncGenerator[Connection, None]:
-  pool: None | Pool = None
-  try:
-    pool = await create_pool(
-      POSTGRES_URI,
-      min_size=10,
-      max_size=POSTGRES_POOL_SIZE,
-      max_inactive_connection_lifetime=300,
-    )
-    logger.info("Database pool created: %s", pool)
-    async with pool.acquire() as connection:
+class PostgresPool:
+  pool: Pool
+
+  @classmethod
+  async def init(cls) -> None:
+    try:
+      cls.pool = await create_pool(
+        POSTGRES_URI,
+        max_inactive_connection_lifetime=5,
+        max_size=POSTGRES_POOL_SIZE,
+        min_size=10,
+      )
+    except PostgresError as e:
+      logger.error(f"Error creating PostgreSQL connection pool: {e}")
+      raise ValueError("Failed to create PostgreSQL connection pool")
+
+  @classmethod
+  async def close(cls) -> None:
+    if cls.pool is not None:
+      await cls.pool.close()
+
+
+class Postgres:
+  def __call__(self, request: Request, response: Response) -> "Postgres":
+    if PostgresPool.pool is None:
+      logger.exception("Please initiate PostgresPool during FastAPI startup")
+    return self
+
+  @asynccontextmanager
+  async def acquire(self) -> AsyncGenerator[Connection, None]:
+    async with PostgresPool.pool.acquire() as connection:
       yield connection
-  except PostgresError as e:
-    logger.error(f"Error creating PostgreSQL connection pool: {e}")
-    raise ValueError("Failed to create PostgreSQL connection pool")
-  finally:
-    if pool is not None:
-      await pool.close()
 
 
-Postgres = Annotated[Connection, Depends(get_database)]
-
-__all__: tuple[str, ...] = ("Postgres", "get_database")
+__all__: Final[tuple[str, ...]] = ("Postgres", "PostgresPool")
