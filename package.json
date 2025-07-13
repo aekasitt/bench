@@ -35,7 +35,7 @@
     "bench:fastify": "node src/bench/fastify/app.js",
     "bench:vanilla": "node src/bench/vanilla/app.js",
     "fmt": "prettier --write ./src/bench/{fastify,vanilla}/*.js",
-    "press:create": "autocannon -b '{\"firmware\":\"android\",\"mac\":\"123-456\"}' -c 1000 -m POST -H 'Content-Type: application/json' localhost:8080/api/devices",
+    "press:create": "autocannon -a 4000 -b '{\"firmware\":\"android\",\"mac\":\"123-456\"}' -c 1000 -m POST -H 'Content-Type: application/json' localhost:8080/api/devices",
     "press:devices": "autocannon -c 10000 localhost:8080/api/devices",
     "press:health": "autocannon -c 10000 localhost:8080/healthz",
     "press:stats": "autocannon -c 10000 localhost:8080/api/devices/stats"
