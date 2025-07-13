@@ -13,14 +13,24 @@
 from __future__ import annotations
 
 ### Third-party packages ###
+from psutil import cpu_count
 from uvicorn._types import ASGIReceiveCallable, ASGISendCallable, Scope
 
 ### Local modules ###
-from bench.spartan.routes import create_device, get_devices, get_device_stats, health
+from bench.spartan.routes import Memcached, create_device, get_devices, get_device_stats, health
+
+
+# NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
+physical_cores: int = cpu_count(logical=False) or 1
+logical_cores: int = cpu_count(logical=True) or 1
+threads_per_core: int = logical_cores // physical_cores
+workers: int = physical_cores * threads_per_core + 1
 
 
 async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
-  assert scope["type"] == "http"
+  if scope["type"] == "lifespan":
+    Memcached.initiate(workers=workers)
+    return
 
   # NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
   from gc import set_threshold
@@ -41,16 +51,9 @@ async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 
 
 def main() -> None:
-  from psutil import cpu_count
   from uvicorn import run
 
-  # NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
-  physical_cores: int = cpu_count(logical=False) or 1
-  logical_cores: int = cpu_count(logical=True) or 1
-  threads_per_core: int = logical_cores // physical_cores
-  workers: int = physical_cores * threads_per_core + 1
-
-  run("bench.spartan.core:app", log_level="error", loop="uvloop", port=8080, workers=workers)
+  run("bench.spartan.core:app", lifespan="on", port=8080, workers=workers)
 
 
 if __name__ == "__main__":

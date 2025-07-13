@@ -14,11 +14,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fileinput import input
+from logging import Logger, getLogger
 from os import getenv
 from socket import gaierror as SocketError
 from time import perf_counter
 from types import TracebackType
-from typing import Any, Final, Type
+from typing import Any, ClassVar, Final, Generator, Type
 from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
@@ -27,6 +28,7 @@ from asyncpg import Connection, connect
 from asyncpg.exceptions import PostgresError
 from prometheus_client import Histogram
 from pylibmc.client import Client
+from pylibmc.pools import ClientPool
 from uvicorn._types import ASGIReceiveCallable, ASGIReceiveEvent, ASGISendCallable, Scope
 
 ### If development environment, load dotenv ###
@@ -44,6 +46,8 @@ POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
 POSTGRES_URI: Final[str] = getenv(
   "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
 )
+
+logger: Logger = getLogger("uvicorn")
 
 
 @dataclass
@@ -70,18 +74,19 @@ H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
 
 class Memcached:
-  """Get Memcached client instance"""
+  pool: ClassVar[ClientPool]
 
-  client: Client
+  def __init__(self) -> None:
+    raise NotImplementedError
 
-  def __enter__(self) -> "Memcached":
-    self.client = Client([MEMCACHED_HOST])
-    return self
+  @classmethod
+  def initiate(cls, workers: int = 1) -> None:
+    cls.pool = ClientPool(mc=Client([MEMCACHED_HOST]), n_slots=MEMCACHED_POOL_SIZE // workers)
 
-  def __exit__(
-    self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
-  ) -> None:
-    self.client.disconnect_all()
+  @classmethod
+  def reserve(cls) -> Generator[Client, None, None]:
+    with cls.pool.reserve() as client:
+      yield client
 
 
 class Postgres:
@@ -146,8 +151,8 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
       "updated_at": now.isoformat(),
     }
     start_time_mc: Final[float] = perf_counter()
-    with Memcached() as memcached:
-      memcached.client.set(
+    with Memcached.pool.reserve() as client:
+      client.set(
         device_uuid.hex.encode(),
         encode(device_dict).decode("utf-8"),
         time=20,
@@ -275,8 +280,10 @@ async def get_device_stats(
   try:
     stats: list[tuple[bytes, dict[bytes, Any]]]
     stats_data: Final[dict[str, str]] = {}
-    with Memcached() as memcached:
-      stats = memcached.client.get_stats()
+    with Memcached.pool.reserve() as client:
+      logger.info(client)
+      logger.info(type(client))
+      stats = client.get_stats()
     _, result = stats[0]
     stats_data["bytes"] = str(result.get(b"bytes", 0))
     stats_data["curr_connections"] = result.get(b"curr_connections", 0)
@@ -297,7 +304,8 @@ async def get_device_stats(
         "body": encode(stats_data),
       }
     )
-  except (SocketError, ValueError):
+  except (SocketError, ValueError) as err:
+    logger.exception(err)
     await send(
       {
         "type": "http.response.start",
@@ -311,7 +319,8 @@ async def get_device_stats(
         "body": b"Memcached error occurred while retrieving stats",
       }
     )
-  except Exception:
+  except Exception as err:
+    logger.exception(err)
     await send(
       {
         "type": "http.response.start",
@@ -344,4 +353,10 @@ async def health(scope: Any, receive: Any, send: Any) -> None:
   )
 
 
-__all__: Final[tuple[str, ...]] = ("health", "get_devices")
+__all__: Final[tuple[str, ...]] = (
+  "Memcached",
+  "create_device",
+  "get_devices",
+  "get_device_stats",
+  "health",
+)
