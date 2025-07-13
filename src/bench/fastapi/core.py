@@ -135,10 +135,11 @@ async def create_device(
       "updated_at": now,
     }
     start_time = perf_counter()
+    raw: bytes = dumps(result)
     with memcached.reserve() as client:
       client.set(
         device_uuid.hex.encode(),
-        dumps(result),
+        raw,
         time=20,
       )
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
