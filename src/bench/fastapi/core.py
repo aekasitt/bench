@@ -125,7 +125,7 @@ async def create_device(
     if not row:
       raise HTTPException(status_code=500, detail="Failed to create device record")
 
-    device_dict = {
+    result = {
       "id": row["id"],
       "uuid": str(device_uuid),
       "mac": device.mac,
@@ -136,12 +136,12 @@ async def create_device(
     start_time = perf_counter()
     with memcached.reserve() as client:
       client.set(
-        device_uuid.hex.encode(),
-        dumps(device_dict),
+        device_uuid.hex.encode("utf-8"),
+        dumps(result),
         time=20,
       )
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
-    return device_dict
+    return result
 
   except PostgresError:
     logger.exception("Postgres error")
