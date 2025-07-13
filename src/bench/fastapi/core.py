@@ -108,10 +108,10 @@ async def create_device(
     device_uuid = uuid()
 
     insert_query = """
-            INSERT INTO fastapi_device (uuid, mac, firmware, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id;
-            """
+      INSERT INTO fastapi_device (uuid, mac, firmware, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id;
+    """
 
     start_time: float = perf_counter()
 
