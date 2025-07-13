@@ -23,7 +23,7 @@ except ImportError:
 
 MEMCACHED_HOST: Final[str] = getenv("MEMCACHED_HOST", "0.0.0.0")
 MEMCACHED_POOL_SIZE: Final[int] = int(getenv("MEMCACHED_POOL_SIZE", "500"))
-POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
+POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "50"))
 POSTGRES_URI: Final[str] = getenv(
   "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
 )
