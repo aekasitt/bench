@@ -34,7 +34,7 @@ class ThreadMappedPool:
   def __init__(self, master: Client):
     ...
 
-  def current_key(self):
+  def current_key(self) -> None | int:
     ...
 
   def reserve(self) -> Generator[Client, None]:
