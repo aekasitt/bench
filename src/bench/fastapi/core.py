@@ -50,6 +50,7 @@ async def lifespan(app: FastAPI) -> None:
   await PostgresPool.init(workers=workers)
   yield
   await PostgresPool.close()
+  MemcachedPool.close()
 
 
 app = FastAPI(lifespan=lifespan)
