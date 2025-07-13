@@ -12,7 +12,6 @@
 ### Standard packages ###
 from contextlib import contextmanager
 from logging import Logger, getLogger
-from queue import Empty
 from typing import Final, Generator
 
 ### Third-party packages ###
@@ -31,17 +30,9 @@ class MemcachedPool:
   pool: ClientPool | None = None
 
   @classmethod
-  def init(cls) -> None:
+  def init(cls, workers: int = 1) -> None:
     client: Client = Client(servers=[MEMCACHED_HOST])
-    cls.pool = ClientPool(client, n_slots=MEMCACHED_POOL_SIZE)
-
-  @classmethod
-  def close(cls) -> None:
-    while not cls.pool.empty():
-      try:
-        cls.pool.get_nowait()
-      except Empty:
-        break
+    cls.pool = ClientPool(client, n_slots=MEMCACHED_POOL_SIZE // workers)
 
 
 class Memcached:
