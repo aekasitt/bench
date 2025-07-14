@@ -36,7 +36,7 @@ class PostgresPool:
   @classmethod
   def init(cls, workers: int = 1) -> None:
     try:
-      cls.pool = create_pool(
+      cls.pool = await create_pool(
         POSTGRES_URI,
         max_inactive_connection_lifetime=5,
         max_size=POSTGRES_POOL_SIZE // workers,
