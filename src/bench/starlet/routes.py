@@ -14,8 +14,8 @@ from datetime import datetime, timezone
 from logging import Logger, getLogger
 from socket import gaierror as SocketError
 from time import perf_counter
-from typing import Any
-from uuid import uuid4 as uuid
+from typing import Any, Final
+from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
 from asyncpg.exceptions import PostgresError
@@ -85,7 +85,6 @@ async def get_devices(request: Request) -> JSONResponse:
       "updated_at": "2024-08-28T15:18:21.137Z",
     },
   )
-
   return JSONResponse(devices)
 
 
@@ -95,29 +94,22 @@ async def create_device(request: Request) -> JSONResponse:
     # Parse request body
     body: Any = await request.json()
     device = DeviceRequest(mac=body["mac"], firmware=body["firmware"])
-
     now = datetime.now(timezone.utc)
-    device_uuid = uuid()
-
+    device_uuid: UUID = uuid()
     insert_query = """
-            INSERT INTO starlette_device (uuid, mac, firmware, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id;
-            """
-
+      INSERT INTO starlet_device (uuid, mac, firmware, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id;
+    """
     start_time: float = perf_counter()
-
     postgres = await get_postgres_connection()
     row = await postgres.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
-
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
-
     if not row:
       return JSONResponse(
         {"detail": "Failed to create device record"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR
       )
-
-    device_dict = {
+    result: dict[str, str] = {
       "id": row["id"],
       "uuid": str(device_uuid),
       "mac": device.mac,
@@ -125,35 +117,27 @@ async def create_device(request: Request) -> JSONResponse:
       "created_at": now,
       "updated_at": now,
     }
-
-    # Measure cache operation
     start_time = perf_counter()
-
     memcached = get_memcached()
     await memcached.set(
       device_uuid.hex.encode(),
-      dumps(device_dict),
+      dumps(result),
       exptime=20,
     )
-
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
-
-    return JSONResponse(device_dict, status_code=HTTP_201_CREATED)
-
+    return JSONResponse(result, status_code=HTTP_201_CREATED)
   except PostgresError:
     logger.exception("Postgres error")
     return JSONResponse(
       {"detail": "Database error occurred while creating device"},
       status_code=HTTP_500_INTERNAL_SERVER_ERROR,
     )
-
   except (SocketError, ValueError):
     logger.exception("Memcached error")
     return JSONResponse(
       {"detail": "Memcached Database error occurred while creating device"},
       status_code=HTTP_500_INTERNAL_SERVER_ERROR,
     )
-
   except Exception:
     logger.exception("Unknown error")
     return JSONResponse(
@@ -192,4 +176,10 @@ async def get_device_stats(request: Request) -> JSONResponse:
     )
 
 
-__all__: tuple[str, ...] = ("health", "metrics", "get_devices", "create_device", "get_device_stats")
+__all__: Final[tuple[str, ...]] = (
+  "create_device",
+  "get_devices",
+  "get_device_stats",
+  "health",
+  "metrics",
+)
