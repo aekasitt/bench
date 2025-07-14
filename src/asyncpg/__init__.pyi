@@ -13,7 +13,7 @@ Type stubs for asyncpg package main module.
 """
 
 ### Standard packages ###
-from typing import Any, Final
+from typing import Any, Awaitable, Final
 
 ### Local modules ###
 from asyncpg.connection import Connection, connect
@@ -49,7 +49,7 @@ def create_pool(
   max_size: int = 10,
   max_inactive_connection_lifetime: float = 300.0,
   **kwargs: Any,
-) -> Pool:
+) -> Awaitable[Pool]:
   """Create a connection pool."""
 
 
