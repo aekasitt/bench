@@ -13,27 +13,34 @@ Type stubs for asyncpg package main module.
 """
 
 ### Standard packages ###
-from typing import Any
+from typing import Any, Final
 
 ### Local modules ###
 from asyncpg.connection import Connection, connect
 from asyncpg.protocol.protocol import Record
 
+
 class Pool:
-  """TODO"""
+  """A connection pool."""
 
   def acquire(self) -> "PoolAcquireContext":
-    """TODO"""
+    """Acquire a database connection from the pool."""
+
   async def close(self) -> None:
-    """TODO"""
+    """Attempt to gracefully close all connections in the pool."""
+
 
 class PoolAcquireContext:
-  """TODO"""
+  """A pool connection acquiring context."""
+
+  __slots__ = ("timeout", "connection", "done", "pool")
 
   async def __aenter__(self) -> Connection:
-    """TODO"""
+    ...
+
   async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-    """TODO"""
+    ...
+
 
 def create_pool(
   dsn: str,
@@ -43,12 +50,14 @@ def create_pool(
   max_inactive_connection_lifetime: float = 300.0,
   **kwargs: Any,
 ) -> Pool:
-  """TODO"""
+  """Create a connection pool."""
 
-__all__: tuple[str, ...] = (
+
+__all__: Final[tuple[str, ...]] = (
   "Connection",
   "Record",
   "Pool",
+  "PoolAcquireContext",
   "create_pool",
   "connect",
 )
