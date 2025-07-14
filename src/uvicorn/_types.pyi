@@ -5,7 +5,7 @@ Type stubs for uvicorn _types package.
 
 ### Standard packages ###
 from collections.abc import Awaitable, Iterable
-from typing import Any, Callable, Literal, NotRequired, Protocol, TypedDict
+from typing import Any, Callable, Final, Literal, NotRequired, Protocol, TypedDict
 
 
 class ASGIReceiveEvent(TypedDict):
@@ -29,7 +29,7 @@ class ASGIVersions(TypedDict):
 
 
 class Scope(TypedDict):
-  type: Literal["http"]
+  type: Literal["http", "lifespan"]
   asgi: ASGIVersions
   http_version: str
   method: str
@@ -51,10 +51,10 @@ ASGISendCallable = Callable[[ASGISendEvent], Awaitable[None]]
 
 class ASGI2Protocol(Protocol):
   def __init__(self, scope: Scope) -> None:
-    """TODO"""
+    ...
 
   async def __call__(self, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
-    """TODO"""
+    ...
 
 
 ASGI2Application = type[ASGI2Protocol]
@@ -62,7 +62,7 @@ ASGI3Application = Callable[[Scope, ASGIReceiveCallable, ASGISendCallable], Awai
 ASGIApplication = ASGI2Application | ASGI3Application
 
 
-__all__: tuple[str, ...] = (
+__all__: Final[tuple[str, ...]] = (
   "ASGIApplication",
   "ASGIReceiveCallable",
   "ASGIReceiveEvent",
