@@ -26,8 +26,8 @@ from starlette.responses import JSONResponse, PlainTextResponse, Response
 from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
 ### Local modules ###
-from bench.starlet.cache import get_memcached
-from bench.starlet.database import get_postgres_connection
+from bench.starlet.cache import Memcached
+from bench.starlet.database import Postgres
 from bench.starlet.metrics import H
 
 ### Initiate module logger ###
@@ -101,9 +101,10 @@ async def create_device(request: Request) -> JSONResponse:
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id;
     """
+    postgres: Postgres = Postgres()
     start_time: float = perf_counter()
-    postgres = await get_postgres_connection()
-    row = await postgres.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
+    async with postgres.acquire() as connection:
+      row = await connection.fetchrow(insert_query, device_uuid, device.mac, device.firmware, now, now)
     H_POSTGRES_LABEL.observe(perf_counter() - start_time)
     if not row:
       return JSONResponse(
@@ -117,13 +118,14 @@ async def create_device(request: Request) -> JSONResponse:
       "created_at": now,
       "updated_at": now,
     }
+    memcached: Memcached = Memcached()
     start_time = perf_counter()
-    memcached = get_memcached()
-    await memcached.set(
-      device_uuid.hex.encode(),
-      dumps(result),
-      exptime=20,
-    )
+    with memcached.reserve() as client:
+      client.set(
+        device_uuid.hex.encode(),
+        dumps(result),
+        exptime=20,
+      )
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
     return JSONResponse(result, status_code=HTTP_201_CREATED)
   except PostgresError:
@@ -146,11 +148,14 @@ async def create_device(request: Request) -> JSONResponse:
     )
 
 
-async def get_device_stats(request: Request) -> JSONResponse:
+async def get_device_stats(
+  request: Request,
+) -> JSONResponse:
   """Get memcached statistics"""
   try:
-    memcached = get_memcached()
-    stats = memcached.get_stats()
+    memcached: Memcached = Memcached()
+    with memcached.reserve() as client:
+      stats = client.get_stats()
     _, result = stats[0]
     return JSONResponse(
       {

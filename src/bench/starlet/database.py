@@ -10,34 +10,55 @@
 # *************************************************************
 
 ### Standard packages ###
+from contextlib import asynccontextmanager
 from logging import Logger, getLogger
-from typing import Final
+from typing import AsyncGenerator, ClassVar, Final
 
 ### Third-party packages ###
-from asyncpg import Connection, connect
+from asyncpg import Connection, Pool, create_pool
 from asyncpg.exceptions import PostgresError
 
 ### Local modules ###
-from bench.starlet.configs import POSTGRES_URI
+from bench.starlet.configs import POSTGRES_POOL_SIZE, POSTGRES_URI
 
 ### Initiate module logger ###
-logger: Logger = getLogger(__name__)
+logger: Logger = getLogger("uvicorn")
 
 
-async def get_database() -> Connection:
-  """Get a database connection"""
-  try:
-    connection = await connect(POSTGRES_URI)
-    logger.info("Database connection created")
-    return connection
-  except PostgresError as e:
-    logger.error(f"Error creating PostgreSQL connection: {e}")
-    raise ValueError("Failed to create PostgreSQL connection")
+class PostgresPool:
+  pool: ClassVar[Pool]
+
+  def __init__(self) -> None:
+    raise NotImplementedError("PostgresPool can only be initiated with init method")
+
+  @classmethod
+  async def initiate(cls, workers: int = 1) -> None:
+    try:
+      cls.pool = await create_pool(
+        POSTGRES_URI,
+        max_inactive_connection_lifetime=5,
+        max_size=POSTGRES_POOL_SIZE // workers,
+        min_size=1,
+      )
+    except PostgresError as e:
+      logger.error(f"Error creating PostgreSQL connection pool: {e}")
+      raise ValueError("Failed to create PostgreSQL connection pool")
+
+  @classmethod
+  async def close(cls) -> None:
+    if cls.pool is not None:
+      await cls.pool.close()
 
 
-async def get_postgres_connection() -> Connection:
-  """Get PostgreSQL connection instance"""
-  return await get_database()
+class Postgres:
+  def __init__(self) -> None:
+    if PostgresPool.pool is None:
+      logger.exception("Please initiate PostgresPool during FastAPI startup")
+
+  @asynccontextmanager
+  async def acquire(self) -> AsyncGenerator[Connection, None]:
+    async with PostgresPool.pool.acquire() as connection:
+      yield connection
 
 
-__all__: Final[tuple[str, ...]] = ("get_database", "get_postgres_connection")
+__all__: Final[tuple[str, ...]] = ("Postgres", "PostgresPool")

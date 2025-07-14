@@ -9,14 +9,37 @@
 # HISTORY:
 # *************************************************************
 
+### Standard packages ###
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
 ### Third-party packages ###
+from psutil import cpu_count
 from starlette.applications import Starlette
 from starlette.routing import Route
 
 ### Local modules ###
+from bench.starlet.cache import MemcachedPool
+from bench.starlet.database import PostgresPool
 from bench.starlet.routes import create_device, get_device_stats, get_devices, health, metrics
 
-# Create routes
+
+# NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
+physical_cores: int = cpu_count(logical=False)
+logical_cores: int = cpu_count(logical=True)
+threads_per_core: int = logical_cores // physical_cores
+workers: int = physical_cores * threads_per_core + 1
+
+
+@asynccontextmanager
+async def lifespan(app: Starlette) -> AsyncGenerator[None, None]:
+  MemcachedPool.initiate(workers=workers)
+  await PostgresPool.initiate(workers=workers)
+  yield
+  MemcachedPool.close()
+  await PostgresPool.close()
+
+
 routes = [
   Route("/healthz", endpoint=health, methods=["GET"]),
   Route("/metrics", endpoint=metrics, methods=["GET"]),
@@ -24,20 +47,11 @@ routes = [
   Route("/api/devices", endpoint=create_device, methods=["POST"]),
   Route("/api/devices/stats", endpoint=get_device_stats, methods=["GET"]),
 ]
-
-# Create Starlette application
-app = Starlette(routes=routes)
+app = Starlette(lifespan=lifespan, routes=routes)
 
 
 def main() -> None:
-  from psutil import cpu_count
   from uvicorn import run
-
-  # NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
-  physical_cores: int = cpu_count(logical=False)
-  logical_cores: int = cpu_count(logical=True)
-  threads_per_core: int = logical_cores // physical_cores
-  workers: int = physical_cores * threads_per_core + 1
 
   run("bench.starlet.core:app", log_level="error", port=8080, workers=workers)
 
