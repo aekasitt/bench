@@ -34,7 +34,7 @@ class PostgresPool:
     raise NotImplementedError("PostgresPool can only be initiated with init method")
 
   @classmethod
-  def init(cls, workers: int = 1) -> None:
+  async def init(cls, workers: int = 1) -> None:
     try:
       cls.pool = await create_pool(
         POSTGRES_URI,
