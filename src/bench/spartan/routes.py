@@ -17,13 +17,12 @@ from fileinput import input
 from os import getenv
 from socket import gaierror as SocketError
 from time import perf_counter
-from types import TracebackType
-from typing import Any, ClassVar, Final, Generator, Type
+from typing import Any, ClassVar, Final
 from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
 from msgspec.json import decode, encode
-from asyncpg import Connection, connect
+from asyncpg import Record, Pool, create_pool
 from asyncpg.exceptions import PostgresError
 from prometheus_client import Histogram
 from pylibmc.client import Client
@@ -45,7 +44,6 @@ POSTGRES_POOL_SIZE: Final[int] = int(getenv("POSTGRES_POOL_SIZE", "20"))
 POSTGRES_URI: Final[str] = getenv(
   "POSTGRES_URI", "postgres://bench:benchpwd@localhost:5432/benchdb"
 )
-
 
 
 @dataclass
@@ -81,23 +79,26 @@ class Memcached:
   def initiate(cls, workers: int = 1) -> None:
     cls.pool = ClientPool(mc=Client([MEMCACHED_HOST]), n_slots=MEMCACHED_POOL_SIZE // workers)
 
-  @classmethod
-  def reserve(cls) -> Generator[Client, None, None]:
-    with cls.pool.reserve() as client:
-      yield client
-
 
 class Postgres:
-  connection: Connection
+  pool: ClassVar[Pool]
 
-  async def __aenter__(self) -> "Postgres":
-    self.connection = await connect(POSTGRES_URI)
-    return self
+  def __init__(self) -> None:
+    raise NotImplementedError
 
-  async def __aexit__(
-    self, exc_type: None | Type[BaseException], exc: Type[BaseException], tb: TracebackType
-  ) -> None:
-    await self.connection.close()
+  @classmethod
+  async def initiate(cls, workers: int = 1) -> None:
+    cls.pool = await create_pool(
+      POSTGRES_URI,
+      max_size=POSTGRES_POOL_SIZE // workers,
+      max_inactive_connection_lifetime=300,
+      min_size=1,
+    )
+
+  @classmethod
+  async def close(cls) -> None:
+    if cls.pool is not None:
+      await cls.pool.close()
 
 
 async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
@@ -113,15 +114,15 @@ async def create_device(scope: Scope, receive: ASGIReceiveCallable, send: ASGISe
     now: Final[datetime] = datetime.now(timezone.utc)
     device_uuid: Final[UUID] = uuid()
     start_time_pg: Final[float] = perf_counter()
-    async with Postgres() as postgres:
+    async with Postgres.pool.acquire() as connection:
       firmware: Final[str] = device.firmware
       mac: Final[str] = device.mac
       insert_query: Final[str] = f"""
         INSERT INTO spartan_device (uuid, mac, firmware, created_at, updated_at)
         VALUES ('{device_uuid}', '{mac}', '{firmware}', '{now}', '{now}')
         RETURNING id;
-        """
-      row = await postgres.connection.fetchrow(insert_query)
+      """
+      row: Record = await connection.fetchrow(insert_query)
     end_time_pg: Final[float] = perf_counter()
     duration_pg: Final[float] = end_time_pg - start_time_pg
     H_POSTGRES_LABEL.observe(duration_pg)
@@ -349,6 +350,7 @@ async def health(scope: Any, receive: Any, send: Any) -> None:
 
 __all__: Final[tuple[str, ...]] = (
   "Memcached",
+  "Postgres",
   "create_device",
   "get_devices",
   "get_device_stats",

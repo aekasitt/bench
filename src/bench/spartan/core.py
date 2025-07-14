@@ -17,7 +17,14 @@ from psutil import cpu_count
 from uvicorn._types import ASGIReceiveCallable, ASGISendCallable, Scope
 
 ### Local modules ###
-from bench.spartan.routes import Memcached, create_device, get_devices, get_device_stats, health
+from bench.spartan.routes import (
+  Memcached,
+  Postgres,
+  create_device,
+  get_devices,
+  get_device_stats,
+  health,
+)
 
 
 # NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
@@ -30,7 +37,9 @@ workers: int = physical_cores * threads_per_core + 1
 async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
   if scope["type"] == "lifespan":
     Memcached.initiate(workers=workers)
+    await Postgres.initiate(workers=workers)
     return
+    await Postgres.close()
 
   # NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
   from gc import set_threshold
@@ -53,7 +62,7 @@ async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 def main() -> None:
   from uvicorn import run
 
-  run("bench.spartan.core:app", lifespan="on", log_level="error", port=8080, workers=workers)
+  run("bench.spartan.core:app", lifespan="on", log_level="error", port=8080, workers=workers * 2)
 
 
 if __name__ == "__main__":
