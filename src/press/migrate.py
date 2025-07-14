@@ -21,6 +21,7 @@ POSTGRES_URI: Final[str] = getenv(
 
 async def create_database() -> None:
   """
+  Drop project tables if exist, create new ones
   """
   try:
     connection: Connection = await connect(POSTGRES_URI)
@@ -33,8 +34,8 @@ async def create_database() -> None:
       "DROP TABLE IF EXISTS vanilla_device;",
     )
     for drop in map(connection.execute, table_drops):
-      result: str = await drop
-      print(f"Create result: { result }")
+      drop_result: str = await drop
+      print(f"{drop_result=}")
     table_creates: tuple[str, ...] = (
        """
        CREATE TABLE IF NOT EXISTS fastapi_device (
@@ -98,8 +99,8 @@ async def create_database() -> None:
        """,
     )
     for create in map(connection.execute, table_creates):
-      result: str = await create
-      print(f"Create result: { result }")
+      create_result: str = await create
+      print(f"{create_result=}")
   except PostgresError as err:
     print(err)
 
@@ -113,4 +114,4 @@ if __name__ == "__main__":
   main()
 
 
-__all__: Final[tuple[str, ...]] = ("create_database",)
+__all__: Final[tuple[str, ...]] = ("create_database", "main")
