@@ -47,7 +47,7 @@ workers: int = physical_cores * threads_per_core + 1
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> None:
   MemcachedPool.init(workers=workers)
-  await PostgresPool.init(workers=workers)
+  PostgresPool.init(workers=workers)
   yield
   await PostgresPool.close()
   MemcachedPool.close()

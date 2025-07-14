@@ -12,7 +12,7 @@
 ### Standard packages ###
 from contextlib import asynccontextmanager
 from logging import Logger, getLogger
-from typing import AsyncGenerator, Final
+from typing import AsyncGenerator, ClassVar, Final
 
 ### Third-party packages ###
 from asyncpg import Connection, Pool, create_pool
@@ -28,15 +28,15 @@ logger: Logger = getLogger("uvicorn")
 
 
 class PostgresPool:
-  pool: Pool
+  pool: ClassVar[Pool]
 
   def __init__(self) -> None:
     raise NotImplementedError("PostgresPool can only be initiated with init method")
 
   @classmethod
-  async def init(cls, workers: int = 1) -> None:
+  def init(cls, workers: int = 1) -> None:
     try:
-      cls.pool = await create_pool(
+      cls.pool = create_pool(
         POSTGRES_URI,
         max_inactive_connection_lifetime=5,
         max_size=POSTGRES_POOL_SIZE // workers,
