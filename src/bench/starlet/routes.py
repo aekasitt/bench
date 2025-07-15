@@ -19,7 +19,7 @@ from uuid import UUID, uuid4 as uuid
 
 ### Third-party packages ###
 from asyncpg.exceptions import PostgresError
-from orjson import dumps
+from msgspec.json import encode
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse, Response
@@ -110,24 +110,24 @@ async def create_device(request: Request) -> JSONResponse:
       return JSONResponse(
         {"detail": "Failed to create device record"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR
       )
-    result: dict[str, str] = {
+    result: dict[str, datetime | str] = {
       "id": row["id"],
       "uuid": str(device_uuid),
       "mac": device.mac,
       "firmware": device.firmware,
-      "created_at": now,
-      "updated_at": now,
+      "created_at": now.isoformat(),
+      "updated_at": now.isoformat(),
     }
     memcached: Memcached = Memcached()
     start_time = perf_counter()
     with memcached.reserve() as client:
       client.set(
         device_uuid.hex.encode(),
-        dumps(result),
-        exptime=20,
+        encode(result).decode("utf-8"),
+        time=20,
       )
     H_MEMCACHED_LABEL.observe(perf_counter() - start_time)
-    return JSONResponse(result, status_code=HTTP_201_CREATED)
+    return JSONResponse(encode(result), status_code=HTTP_201_CREATED)
   except PostgresError:
     logger.exception("Postgres error")
     return JSONResponse(
