@@ -26,8 +26,14 @@ class ClientPool:
     another thread to fill it before returning.
     """
 
+  def empty(self) -> bool:
+    """Return True if the queue is empty, False otherwise (not reliable!)."""
+
   def fill(self, mc: Client, n_slots: int) -> None:
     """Fill n_slots of the pool with clones of mc."""
+
+  def get_nowait(self) -> Client:
+    """Remove and return an item from the queue without blocking."""
 
 
 class ThreadMappedPool:
