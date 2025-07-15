@@ -25,8 +25,8 @@ from bench.starlet.routes import create_device, get_device_stats, get_devices, h
 
 
 # NOTE: https://sentry.io/answers/number-of-uvicorn-workers-needed-in-production/
-physical_cores: int = cpu_count(logical=False)
-logical_cores: int = cpu_count(logical=True)
+physical_cores: int = cpu_count(logical=False) or 1
+logical_cores: int = cpu_count(logical=True) or 1
 threads_per_core: int = logical_cores // physical_cores
 workers: int = physical_cores * threads_per_core + 1
 
