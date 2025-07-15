@@ -13,7 +13,7 @@
 from contextlib import contextmanager
 from logging import Logger, getLogger
 from queue import Empty
-from typing import Final, Generator
+from typing import ClassVar, Final, Generator
 
 ### Third-party packages ###
 from pylibmc.client import Client
@@ -26,7 +26,7 @@ logger: Logger = getLogger(__name__)
 
 
 class MemcachedPool:
-  pool: ClientPool | None = None
+  pool: ClassVar[ClientPool]
 
   @classmethod
   def initiate(cls, workers: int = 1) -> None:
