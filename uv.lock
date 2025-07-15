@@ -61,11 +61,9 @@ fastapi = [
 ]
 litestr = [
     { name = "litestar" },
-    { name = "msgspec" },
     { name = "orjson" },
 ]
 starlet = [
-    { name = "orjson" },
     { name = "starlette" },
 ]
 
@@ -83,10 +81,8 @@ requires-dist = [
     { name = "fastapi", marker = "extra == 'fastapi'", specifier = ">=0.115.6" },
     { name = "litestar", marker = "extra == 'litestr'", specifier = ">=2.16.0" },
     { name = "msgspec", specifier = ">=0.19.0" },
-    { name = "msgspec", marker = "extra == 'litestr'", specifier = ">=0.19.0" },
     { name = "orjson", marker = "extra == 'fastapi'", specifier = ">=3.10.18" },
     { name = "orjson", marker = "extra == 'litestr'", specifier = ">=3.10.18" },
-    { name = "orjson", marker = "extra == 'starlet'", specifier = ">=3.10.18" },
     { name = "prometheus-client", specifier = ">=0.21.1" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "pydantic", marker = "extra == 'fastapi'", specifier = ">=2.11.7" },
