@@ -76,7 +76,6 @@ mypy-args = [
   '--disallow-incomplete-defs',
   '--strict',
 ]
-packages = [ 'src/bench_starlette' ]
 only-include = [
   '/src/bench/spartan/routes.py',
 ]
