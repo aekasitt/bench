@@ -35,6 +35,9 @@ Plus, it's fun.
 
 ## Results
 
+This repository was presented at [ThaiPy](https://www.meetup.com/thaipy-bangkok-python-meetup/) monthly
+community meetup as part of Python at Scale demonstration. Check out [SLIDES](./SLIDES.md)
+
 ### Python FastAPI
 
 <details>
