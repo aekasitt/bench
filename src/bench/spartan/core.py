@@ -9,6 +9,9 @@
 # HISTORY:
 # *************************************************************
 
+### Standard packages ###
+from gc import set_threshold
+
 ### Third-party packages ###
 from psutil import cpu_count
 from uvicorn._types import ASGIReceiveCallable, ASGISendCallable, Scope
@@ -22,6 +25,10 @@ physical_cores: int = cpu_count(logical=False) or 1
 logical_cores: int = cpu_count(logical=True) or 1
 threads_per_core: int = logical_cores // physical_cores
 workers: int = physical_cores * threads_per_core + 1
+
+
+# NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
+set_threshold(200_000)  # default: 2,000 -> 200,000
 
 
 async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
