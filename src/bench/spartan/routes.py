@@ -348,6 +348,25 @@ async def health(scope: Any, receive: Any, send: Any) -> None:
   )
 
 
+async def lifespan(receive: ASGIReceiveCallable, send: ASGISendCallable, workers: int) -> None:
+  while 1:
+    message: ASGIReceiveEvent = await receive()
+    if message["type"] == "lifespan.shutdown":
+      try:
+        await Postgres.close()
+        await send({"type": "lifespan.shutdown.complete"})
+      except Exception:
+        await send({"type": "lifespan.shutdown.failed"})
+      break
+    elif message["type"] == "lifespan.startup":
+      try:
+        Memcached.initiate(workers=workers)
+        await Postgres.initiate(workers=workers)
+        await send({"type": "lifespan.startup.complete"})
+      except Exception:
+        await send({"type": "lifespan.startup.failed"})
+
+
 __all__: Final[tuple[str, ...]] = (
   "Memcached",
   "Postgres",
@@ -355,4 +374,5 @@ __all__: Final[tuple[str, ...]] = (
   "get_devices",
   "get_device_stats",
   "health",
+  "lifespan",
 )
