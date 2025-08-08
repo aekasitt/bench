@@ -11,8 +11,10 @@
 
 ### Standard packages ###
 from __future__ import annotations
+from typing import Literal
 
 ### Third-party packages ###
+from gc import set_threshold
 from psutil import cpu_count
 from uvicorn._types import ASGIReceiveCallable, ASGISendCallable, Scope
 
@@ -34,17 +36,29 @@ threads_per_core: int = logical_cores // physical_cores
 workers: int = physical_cores * threads_per_core + 1
 
 
+# NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
+set_threshold(80_000)
+
+
 async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable) -> None:
   if scope["type"] == "lifespan":
-    Memcached.initiate(workers=workers)
-    await Postgres.initiate(workers=workers)
-    return
-    await Postgres.close()
-
-  # NOTE: https://mypyc.readthedocs.io/en/latest/performance_tips_and_tricks.html#adjusting-garbage-collection
-  from gc import set_threshold
-
-  set_threshold(150_000)
+    while True:
+      message: dict[Literal["type"], str] = await receive()
+      if message["type"] == "lifespan.startup":
+        try:
+          Memcached.initiate(workers=workers)
+          await Postgres.initiate(workers=workers)
+          await send({"type": "lifespan.startup.complete"})
+        except Exception:
+          await send({"type": "lifespan.startup.failed"})
+      elif message["type"] == "lifespan.shutdown":
+        try:
+          await Postgres.close()
+          await send({"type": "lifespan.shutdown.complete"})
+        except Exception:
+          await send({"type": "lifespan.shutdown.failed"})
+        finally:
+          return
 
   path: str = scope["path"]
   method: str = scope["method"]
@@ -62,7 +76,7 @@ async def app(scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 def main() -> None:
   from uvicorn import run
 
-  run("bench.spartan.core:app", lifespan="on", log_level="error", port=8080, workers=workers * 2)
+  run("bench.spartan.core:app", log_level="info", port=8080, workers=1)
 
 
 if __name__ == "__main__":
