@@ -9,14 +9,26 @@ from typing import Any, Callable, Final, Literal, NotRequired, Protocol, TypedDi
 
 
 class ASGIReceiveEvent(TypedDict):
-  type: Literal["http.disconnect", "http.request"]
+  type: Literal[
+    "http.disconnect",
+    "http.request",
+    "lifespan.startup",
+    "lifespan.shutdown",
+  ]
   body: bytes
   more_body: bool
 
 
 class ASGISendEvent(TypedDict):
   body: NotRequired[bytes]
-  type: Literal["http.response.body", "http.response.start"]
+  type: Literal[
+    "http.response.body",
+    "http.response.start",
+    "lifespan.shutdown.complete",
+    "lifespan.shutdown.failed",
+    "lifespan.startup.complete",
+    "lifespan.startup.failed",
+  ]
   status: NotRequired[int]
   headers: NotRequired[Iterable[tuple[bytes, bytes]]]
   trailers: NotRequired[bool]
