@@ -58,7 +58,7 @@ packages = [
 [tool.hatch.build.targets.wheel.hooks.mypyc]
 dependencies = [
   'hatch-mypyc >=0.16.0',
-  'mypy ==1.16.1',
+  'mypy ==1.18.2',
 ]
 enable-by-default = true
 exclude = [
